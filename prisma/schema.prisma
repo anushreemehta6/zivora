@@ -1,0 +1,349 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+ provider = "prisma-client-js"
+}
+
+datasource db {
+ provider = "postgresql"
+ 
+}
+
+
+//////////////////////////////
+// ENUMS
+//////////////////////////////
+
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+enum ProductType {
+  GOLD
+  SILVER
+  DIAMOND
+  PLATINUM
+  GEMSTONE
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  RAZORPAY
+  STRIPE
+  COD
+  UPI
+}
+
+//////////////////////////////
+// USER MODEL
+//////////////////////////////
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  phone         String?  @unique
+  password      String
+  role          Role     @default(USER)
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  addresses    Address[]
+  orders       Order[]
+  cart         Cart?
+  wishlist     Wishlist?
+  reviews      Review[]
+  customOrders CustomOrder[]
+}
+
+//////////////////////////////
+// ADDRESS
+//////////////////////////////
+
+model Address {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  fullName   String
+  phone      String
+  line1      String
+  line2      String?
+  city       String
+  state      String
+  postalCode String
+  country    String
+
+  createdAt DateTime @default(now())
+
+  orders Order[]
+}
+
+//////////////////////////////
+// CATEGORY
+//////////////////////////////
+
+model Category {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  image       String?
+
+  products Product[]
+}
+
+//////////////////////////////
+// COLLECTION (Wedding, Festive etc.)
+//////////////////////////////
+
+model Collection {
+  id     String  @id @default(uuid())
+  name   String
+  slug   String  @unique
+  banner String?
+
+  products Product[]
+}
+
+//////////////////////////////
+// PRODUCT
+//////////////////////////////
+
+model Product {
+  id            String      @id @default(uuid())
+  name          String
+  slug          String      @unique
+  description   String
+  price         Float?
+  comparePrice  Float?
+  sku           String      @unique
+  type          ProductType
+  purity        String? // 22K, 18K etc
+  makingCharges Float?
+  weight        Float?
+  isFeatured    Boolean     @default(false)
+  isActive      Boolean     @default(true)
+    stonePrice    Float?      @default(0)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  collectionId String?
+  collection   Collection? @relation(fields: [collectionId], references: [id])
+
+  variants   ProductVariant[]
+  images     ProductImage[]
+  reviews    Review[]
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cartItems     CartItem[]
+  wishlistItems WishlistItem[]
+}
+
+//////////////////////////////
+// PRODUCT VARIANTS (size, weight options)
+//////////////////////////////
+
+model ProductVariant {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  name  String // e.g. 18K-6gm
+  price Float
+  stock Int
+  sku   String @unique
+
+  createdAt DateTime @default(now())
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+}
+
+//////////////////////////////
+// PRODUCT IMAGES
+//////////////////////////////
+
+model ProductImage {
+  id        String  @id @default(uuid())
+  url       String
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+//////////////////////////////
+// CART
+//////////////////////////////
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String          @id @default(uuid())
+  cartId    String
+  cart      Cart            @relation(fields: [cartId], references: [id])
+  productId String
+  product   Product         @relation(fields: [productId], references: [id])
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
+  quantity  Int
+}
+
+//////////////////////////////
+// WISHLIST
+//////////////////////////////
+
+model Wishlist {
+  id     String         @id @default(uuid())
+  userId String         @unique
+  user   User           @relation(fields: [userId], references: [id])
+  items  WishlistItem[]
+}
+
+model WishlistItem {
+  id         String   @id @default(uuid())
+  wishlistId String
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id])
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+}
+
+//////////////////////////////
+// ORDER
+//////////////////////////////
+
+model Order {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  addressId String
+  address   Address @relation(fields: [addressId], references: [id])
+
+  totalAmount   Float
+  discount      Float?
+  finalAmount   Float
+  status        OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentMethod PaymentMethod
+  transactionId String?
+
+  items     OrderItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String          @id @default(uuid())
+  orderId   String
+  order     Order           @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product         @relation(fields: [productId], references: [id])
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
+  quantity  Int
+  price     Float
+}
+
+//////////////////////////////
+// REVIEW
+//////////////////////////////
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}
+
+//////////////////////////////
+// COUPON
+//////////////////////////////
+
+model Coupon {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  discount     Float
+  discountType String   // percentage | flat
+  isActive     Boolean  @default(true)
+  expiryDate   DateTime?
+  minAmount    Float?
+  createdAt    DateTime @default(now())
+}
+
+//////////////////////////////
+// CUSTOM JEWELRY ORDER
+//////////////////////////////
+
+model CustomOrder {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  description    String
+  referenceImage String?
+  budget         Float?
+  status         String   @default("PENDING")
+  createdAt      DateTime @default(now())
+}
+
+//////////////////////////////
+// CMS BANNERS
+//////////////////////////////
+
+model Banner {
+  id        String   @id @default(uuid())
+  title     String
+  image     String
+  link      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model MetalRate {
+  id String @id @default(cuid())
+
+  metal String
+  purity String
+
+  price Float
+  adminPrice Float?
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([metal, purity], name: "metal_purity")
+}
