@@ -11,11 +11,11 @@ return(
   <>
 <div
   className="h-[70vh] bg-cover bg-center flex flex-col justify-center p-10"
-  style={{ backgroundImage: `url(${bg.src})` }}
+  style={{ backgroundImage: `url(${bg.src})`, opacity:50 }}
 >
   <div className="">
-    <h1 className="text-5xl font-semibold logo mb-2">Where Silver Becomes Statement</h1>
-    <p className="text-xl w-lg">Discover beautifully crafted silver jewellery designed for everyday elegance, meaningful gifting, and lasting impressions.</p>
+    <h1 className="text-3xl md:text-5xl font-semibold logo mb-2">Where Silver Becomes Statement</h1>
+    <p className="text-xl w-sm md:w-lg">Discover beautifully crafted silver jewellery designed for everyday elegance, meaningful gifting, and lasting impressions.</p>
     <Button variant="dark" className="flex items-center gap-2 mt-5 rounded-full">
   Shop Now
   <ArrowRight className="transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110" />
