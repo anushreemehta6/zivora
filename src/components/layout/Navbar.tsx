@@ -1,4 +1,7 @@
 "use client";
+
+
+import { useSession, signOut } from "next-auth/react";
 import React from "react";
 import { Hamburger, Heart, Menu, Search, User, XIcon } from "lucide-react";
 import { useState } from "react";
@@ -6,6 +9,7 @@ import { div } from "motion/react-client";
 import Link from "next/link";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session } = useSession();
   return (
     <>
     <div className="m-0 p-5 flex justify-between md:justify-around text-center  overflow-hidden">
@@ -62,9 +66,7 @@ const Navbar = () => {
           <Link href="/join" className="text-lg font-medium text-[#1F2933]">
             Join community
           </Link>
-          <Link href="/signup" className="text-lg font-medium text-[#1F2933]">
-            SignUp / SignIn
-          </Link>
+         <Link href="/login">Login</Link>
         </div>
 
         {/* Click outside to close */}
@@ -82,7 +84,15 @@ const Navbar = () => {
           />
         </div>
         <Heart />
-        <User />
+        {session ? (
+  <button onClick={() => signOut()}>
+    <User />
+  </button>
+) : (
+  <Link href="/login">
+    <User />
+  </Link>
+)}
       </div>
       
     </div>

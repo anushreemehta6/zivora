@@ -1,31 +1,32 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: any) => {
+  const handleSignup = async (e: any) => {
     e.preventDefault();
     setError("");
 
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      body: JSON.stringify({ name, email, password }),
     });
 
-    if (res?.error) {
-      setError("Invalid email or password");
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error);
     } else {
-      router.push("/home");
+      router.push("/login");
     }
   };
 
@@ -33,12 +34,17 @@ export default function LoginPage() {
     <div className="flex items-center justify-center h-screen bg-gray-50">
       <div className="bg-white p-8 rounded-xl shadow-md w-[350px]">
         <h1 className="text-2xl font-semibold mb-6 text-center">
-          Welcome Back 👋
+          Create Account ✨
         </h1>
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        <form onSubmit={handleSignup} className="flex flex-col gap-4">
           <input
-            type="email"
+            placeholder="Name"
+            className="border p-2 rounded"
+            onChange={(e) => setName(e.target.value)}
+          />
+
+          <input
             placeholder="Email"
             className="border p-2 rounded"
             onChange={(e) => setEmail(e.target.value)}
@@ -56,23 +62,14 @@ export default function LoginPage() {
           )}
 
           <button className="bg-black text-white p-2 rounded">
-            Login
+            Sign Up
           </button>
         </form>
 
-        {/* GOOGLE LOGIN */}
-        <button
-          onClick={() => signIn("google", { callbackUrl: "/home" })}
-          className="mt-4 w-full bg-red-500 text-white p-2 rounded"
-        >
-          Continue with Google
-        </button>
-
-        {/* SIGNUP LINK */}
         <p className="text-sm mt-4 text-center">
-          New here?{" "}
-          <Link href="/signup" className="text-blue-600 font-medium">
-            Create an account
+          Already have an account?{" "}
+          <Link href="/login" className="text-blue-600 font-medium">
+            Login
           </Link>
         </p>
       </div>

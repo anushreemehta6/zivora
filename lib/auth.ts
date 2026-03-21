@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prisma"
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs"
 import { Role } from "@prisma/client"
 
@@ -48,7 +49,11 @@ export const authOptions: NextAuthOptions = {
           
         }
       }
-    })
+    }),
+    GoogleProvider({
+    clientId: process.env.GOOGLE_CLIENT_ID!,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+  }),
   ],
 
   callbacks: {
@@ -70,7 +75,28 @@ export const authOptions: NextAuthOptions = {
       console.log("Session callback:", { token })
 
       return session
+    },
+
+    async signIn({ user, account }) {
+  if (account?.provider === "google") {
+    const existingUser = await prisma.user.findUnique({
+      where: { email: user.email! },
+    });
+
+    if (!existingUser) {
+      await prisma.user.create({
+        data: {
+          email: user.email!,
+          name: user.name || "",
+          password: "", // no password for Google users
+        },
+      });
     }
+  }
+
+  return true;
+}
+
   },
 
   pages: {
