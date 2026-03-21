@@ -2,6 +2,8 @@ import Providers from "./providers"
 import { ReactNode } from "react"
 import "./globals.css";
 import { Playfair_Display, Inter } from 'next/font/google';
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -19,7 +21,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html className={`${playfair.variable} ${inter.variable}`}>
       <body >
         <Providers>
+          <Navbar/>
           {children}
+          <Footer/>
         </Providers>
       </body>
     </html>
