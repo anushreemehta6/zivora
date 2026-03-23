@@ -34,7 +34,7 @@ export default function SignupPage() {
     <div className="flex items-center justify-center h-screen bg-gray-50">
       <div className="bg-white p-8 rounded-xl shadow-md w-[350px]">
         <h1 className="text-2xl font-semibold mb-6 text-center">
-          Create Account ✨
+          Create Account 
         </h1>
 
         <form onSubmit={handleSignup} className="flex flex-col gap-4">

@@ -25,7 +25,7 @@ export default function LoginPage() {
     if (res?.error) {
       setError("Invalid email or password");
     } else {
-      router.push("/home");
+      router.push("/");
     }
   };
 
@@ -62,7 +62,7 @@ export default function LoginPage() {
 
         {/* GOOGLE LOGIN */}
         <button
-          onClick={() => signIn("google", { callbackUrl: "/home" })}
+          onClick={() => signIn("google", { callbackUrl: "/" })}
           className="mt-4 w-full bg-red-500 text-white p-2 rounded"
         >
           Continue with Google
