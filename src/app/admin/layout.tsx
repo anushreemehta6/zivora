@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "../../../lib/auth"
 import { ReactNode } from "react"
+import AdminSidebar from "./components/AdminSidebar"
 import { redirect } from "next/navigation"
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
@@ -17,8 +18,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   }
 
   return (
-    <div>
-      <h1>Admin Panel</h1>
+    <div className="flex">
+
+       <AdminSidebar />
       {children}
     </div>
   )

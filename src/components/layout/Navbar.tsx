@@ -3,7 +3,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import React from "react";
-import { Hamburger, Heart, Menu, Search, User, XIcon } from "lucide-react";
+import { Hamburger, Heart, Menu, Search, ShoppingBag, User, XIcon } from "lucide-react";
 import { useState } from "react";
 import { div } from "motion/react-client";
 import Link from "next/link";
@@ -17,6 +17,7 @@ const Navbar = () => {
         <Link href="/home">Home</Link>
         <Link href="/categories">Categories</Link>
         <Link href="/shop">Shop</Link>
+       
       </div>
 
       <h1
@@ -83,7 +84,7 @@ const Navbar = () => {
             className="pl-10 pr-3 py-1 rounded-full border-2 border-gray-500"
           />
         </div>
-        <Heart />
+       <Link href="/wishlist"><Heart/></Link>
         {session ? (
   <button onClick={() => signOut()}>
     <User />
@@ -93,6 +94,8 @@ const Navbar = () => {
     <User />
   </Link>
 )}
+
+ <Link href="/cart"> <ShoppingBag/></Link>
       </div>
       
     </div>
