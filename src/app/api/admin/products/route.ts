@@ -18,7 +18,8 @@ export async function POST(req: Request) {
       category,
       description,
       type,
-      categoryId
+      categoryId,
+      image,
     } = body
 
     // Get latest metal rate
@@ -51,28 +52,41 @@ export async function POST(req: Request) {
     slug: name.toLowerCase().replace(/\s+/g, "-"),
     description,
     sku: `${Date.now()}`,
-    type,
+    type: type, // 👈 IMPORTANT FIX
     purity,
     weight,
     makingCharges: makingCharge,
     stonePrice,
     price: basePrice,
-  category: {
-  connect: { id: categoryId }
-}
+
+    category: {
+      connect: { id: categoryId } // ✅ STRING (correct)
+    },
+
+    // 🔥 FIX IMAGE HERE
+    images: {
+      create: [
+        {
+          url: image
+        }
+      ]
+    }
   }
 })
 
     return NextResponse.json(product)
 
-  } catch (error) {
+  } catch (error: any) {
+  console.log("FULL ERROR:", error)
 
-    return NextResponse.json(
-      { error: "Product creation failed" ,errorDetails: error},
-      { status: 500 }
-    )
-
-  }
+  return NextResponse.json(
+    {
+      error: "Product creation failed",
+      message: error.message
+    },
+    { status: 500 }
+  )
+}
 
 }
 export async function GET() {

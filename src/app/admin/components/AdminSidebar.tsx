@@ -7,7 +7,7 @@ const menu = [
   { name: "Dashboard", path: "/admin" },
   { name: "Analytics", path: "/admin/analytics" },
   { name: "Add Category", path: "/admin/category" },
-  { name: "Add Product", path: "/admin/product/add" },
+  { name: "Add Product", path: "/admin/product" },
   { name: "Silver Price", path: "/admin/silver-price" },
   { name: "Banners", path: "/admin/banners" },
   { name: "Coupons", path: "/admin/coupons" },
