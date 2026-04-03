@@ -1,4 +1,50 @@
 import bg from "./bg-landing.png";
+import heroComposition from "./hero-composition.png";
+import rings from "./category_rings.png";
+import earrings from "./category_earrings.png";
+import necklaces from "./category_necklaces.png";
+import bracelets from "./category_bracelets.png";
+import premiumPackaging from "./premium_packaging.png";
+
+// New Generated Assets
+import occasionBridal from "./occasion_bridal.png";
+import occasionAnniversary from "./occasion_anniversary.png";
+import occasionHeart from "./occasion_heart.png";
+import occasionWork from "./occasion_work.png";
+import recipientNecklace from "./recipient_necklace.png";
+import recipientBracelet from "./recipient_bracelet.png";
+import themeMinimal from "./theme_minimal.png";
+import themeFloral from "./theme_floral.png";
+import themeAntique from "./theme_antique.png";
+import themeContemporary from "./theme_contemporary.png";
+import giftingBg from "./gifting_bg.png";
+import userAvatar1 from "./user_avatar_1.png";
+import userAvatar2 from "./user_avatar_2.png";
+import userAvatar3 from "./user_avatar_3.png";
+
 export {
-    bg
+    bg,
+    heroComposition,
+    rings,
+    earrings,
+    necklaces,
+    bracelets,
+    premiumPackaging,
+    
+    // New Exports
+    occasionBridal,
+    occasionAnniversary,
+    occasionHeart,
+    occasionWork,
+    recipientNecklace,
+    recipientBracelet,
+    themeMinimal,
+    themeFloral,
+    themeAntique,
+    themeContemporary,
+    giftingBg,
+    userAvatar1,
+    userAvatar2,
+    userAvatar3
 }
+

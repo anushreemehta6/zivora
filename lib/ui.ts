@@ -1,37 +1,45 @@
 export const buttonStyles = {
   primary: `
-    px-6 py-3 rounded-xl font-medium text-gray-900
+    px-6 py-3 rounded-xl font-medium text-white
     shadow-md transition-all duration-300
-    bg-gradient-to-br from-gray-200 to-gray-400
-    hover:from-gray-300 hover:to-gray-500
-    hover:-translate-y-1
+    bg-secondary hover:bg-slate-800
+    hover:-translate-y-1 active:scale-95
+  `,
+
+  gold: `
+    px-6 py-3 rounded-xl font-medium text-white
+    shadow-md transition-all duration-300
+    bg-gradient-to-r from-primary to-secondary
+    hover:from-secondary hover:to-primary
+    hover:shadow-lg hover:-translate-y-1 active:scale-95
   `,
 
   chrome: `
-    px-6 py-3 rounded-xl font-medium text-gray-900
+    px-6 py-3 rounded-xl font-medium text-secondary
     shadow-md transition-all duration-300 relative overflow-hidden
-    hover:-translate-y-1
+    bg-white border border-accent
+    hover:bg-gray-50 hover:-translate-y-1 active:scale-95
   `,
 
   dark: `
     px-6 py-3 rounded-xl font-medium text-white
-    shadow-md transition-all duration-300
-    bg-gradient-to-br from-gray-600 to-gray-800
-    hover:from-gray-700 hover:to-gray-900
-    hover:-translate-y-1
+    shadow-lg transition-all duration-300
+    bg-slate-900 hover:bg-black
+    hover:-translate-y-1 active:scale-95
   `,
 
   outline: `
-    px-6 py-3 rounded-xl font-medium text-gray-700
-    border border-gray-300
+    px-6 py-3 rounded-xl font-medium text-secondary
+    border-2 border-secondary
     transition-all duration-300
-    hover:bg-gray-100 hover:-translate-y-1
+    hover:bg-secondary hover:text-white hover:-translate-y-1 active:scale-95
   `,
 
   soft: `
-    px-6 py-3 rounded-xl font-medium text-gray-900
-    shadow-md transition-all duration-300
-    bg-gradient-to-br from-blue-50 to-gray-300
-    hover:-translate-y-1
+    px-6 py-3 rounded-xl font-medium text-secondary
+    shadow-sm transition-all duration-300
+    bg-white/50 backdrop-blur-sm border border-gray-200
+    hover:bg-white hover:-translate-y-1 active:scale-95
   `,
 };
+

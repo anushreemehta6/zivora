@@ -16,14 +16,16 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+import LayoutWrapper from "@/components/layout/LayoutWrapper";
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html className={`${playfair.variable} ${inter.variable}`}>
-      <body >
+    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
+      <body>
         <Providers>
-          <Navbar/>
-          {children}
-          <Footer/>
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
         </Providers>
       </body>
     </html>

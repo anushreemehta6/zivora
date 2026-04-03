@@ -5,17 +5,26 @@ type Props = {
   variant?: keyof typeof buttonStyles;
   children: React.ReactNode;
   className?: string;
-  type?:string;
+  type?: "button" | "submit" | "reset";
+  onClick?: () => void;
+  disabled?: boolean;
 };
 
 export default function Button({
   variant = "primary",
   children,
   className,
-  type,
+  type = "button",
+  onClick,
+  disabled
 }: Props) {
   return (
-    <button className={clsx(buttonStyles[variant], className,type)}>
+    <button 
+      type={type}
+      className={clsx(buttonStyles[variant], className)}
+      onClick={onClick}
+      disabled={disabled}
+    >
       {children}
     </button>
   );

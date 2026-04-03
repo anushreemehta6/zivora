@@ -1,50 +1,83 @@
-import { Facebook, Instagram, MessageCircleHeart } from 'lucide-react'
+import { Facebook, Instagram, MessageCircleHeart, Mail, Phone, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
 const Footer = () => {
   return (
-    <div className="bg-[#02203d]  bottom-0 relative py-5 px-20 ">
-     <div className='grid md:grid-cols-3 overflow-hidden gap-8 text-slate-400 '>
-        <div className='flex flex-col'>
-            <h1 className='text-2xl text-white font-semibold mb-3'>Quick Links</h1>
-            <Link href="/reviews" className='hover:text-white'>Customer Reviews</Link>
-            <Link href="/about" className='hover:text-white'>About us</Link>
-            <Link href="/join">Join us</Link>
-
-        </div>
-
-        <div className='flex flex-col'>
-            <h1 className='text-2xl text-white font-semibold mb-3'>Info</h1>
-            <Link href="/reviews" className='hover:text-white'>Shipping & Returns</Link>
-            <Link href="/about" className='hover:text-white'>Private Policy</Link>
-            <Link href="/join" className='hover:text-white'>FAQs</Link>
-            
-        </div>
-
-        <div className='flex flex-col'>
-            <h1 className='text-2xl text-white font-semibold mb-3'>Contact Us</h1>
-           <p className='hover:text-white'>
-            For any suggestions,queries or complaints please contact us: <br/>
-            D-35 Shanti nagar OPP. NBC car parking Jaipur, Rajasthan 302006
-           </p>
-           <p className='hover:text-white'>
-            9549258382 , 9529890942 (10 AM to 6:30 PM)
-           </p>
-            
-        </div>
-
-     </div>
-     <div className='flex gap-4  mt-4'>
-        <Facebook className='text-white  hover:-translate-x-1 hover:scale-110 transition duration-300 ease-in-out'/>
-        <Instagram className='text-white hover:-translate-x-1 hover:scale-110 transition duration-300 ease-in-out '/>
-        <MessageCircleHeart className='text-white hover:-translate-x-1 hover:scale-110 transition duration-300 ease-in-out '/>
-        
-     </div>
+    <footer className="bg-secondary text-white pt-24 pb-12 px-8 md:px-20 border-t border-white/5 relative overflow-hidden">
+      {/* Decorative Blur */}
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -z-10" />
       
-      <div className='text-white text-sm shadow-2xl text-center mt-4 md:mt-2'>Designed and Developed By Anushree Mehta - anushreemehta6@gmail.com</div>
-    </div>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20 text-slate-400">
+        <div className="flex flex-col space-y-8">
+          <Link href="/">
+            <h1 className="logo-gradient text-4xl font-bold tracking-tighter">Zivora</h1>
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-1">Fine Silver Jewelry</p>
+          </Link>
+          <p className="text-sm leading-relaxed max-w-xs font-medium">
+            Exquisitely crafted 925 sterling silver jewelry. Timeless designs, ethically sourced, and made to last a lifetime.
+          </p>
+          <div className="flex gap-4">
+            <Link href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-all duration-300">
+              <Facebook size={18} className="text-white" />
+            </Link>
+            <Link href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-all duration-300">
+              <Instagram size={18} className="text-white" />
+            </Link>
+            <Link href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-all duration-300">
+              <MessageCircleHeart size={18} className="text-white" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="flex flex-col space-y-6">
+          <h3 className="text-lg text-white font-bold  underline decoration-primary underline-offset-8">Quick Links</h3>
+          <ul className="space-y-4 text-sm font-bold uppercase tracking-widest">
+            <li><Link href="/products" className="hover:text-primary transition-colors">Collection</Link></li>
+            <li><Link href="/wishlist" className="hover:text-primary transition-colors">Wishlist</Link></li>
+            <li><Link href="/about" className="hover:text-primary transition-colors">Our Story</Link></li>
+            <li><Link href="/contact" className="hover:text-primary transition-colors">Customer Care</Link></li>
+          </ul>
+        </div>
+
+        <div className="flex flex-col space-y-6">
+          <h3 className="text-lg text-white font-bold underline decoration-primary underline-offset-8">Information</h3>
+          <ul className="space-y-4 text-sm font-bold uppercase tracking-widest">
+            <li><Link href="/shipping-returns" className="hover:text-primary transition-colors">Shipping & Returns</Link></li>
+            <li><Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+            <li><Link href="/faq" className="hover:text-primary transition-colors">FAQs</Link></li>
+            <li><Link href="/size-guide" className="hover:text-primary transition-colors">Size Guide</Link></li>
+          </ul>
+        </div>
+
+        <div className="flex flex-col space-y-8">
+          <h3 className="text-lg text-white font-bold  underline decoration-primary underline-offset-8">Visit Studio</h3>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <MapPin size={20} className="text-primary flex-shrink-0" />
+              <p className="text-sm leading-relaxed font-medium">
+                D-35 Shanti Nagar, OPP. NBC Parking, Jaipur, Rajasthan 302006
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Phone size={18} className="text-primary flex-shrink-0" />
+              <p className="text-sm font-bold tracking-wider hover:text-white transition-colors cursor-pointer">+91 95492 58382</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Mail size={18} className="text-primary flex-shrink-0" />
+              <p className="text-sm font-bold tracking-wider hover:text-white transition-colors cursor-pointer">concierge@zivora.co</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] font-bold text-gray-500 uppercase tracking-[0.25em]">
+        <p>&copy; 2024 Zivora Fine Jewelry. All Rights Reserved.</p>
+        <p>Designed and Developed By Anushree Mehta</p>
+      </div>
+    </footer>
   )
 }
 
 export default Footer
+

@@ -25,11 +25,17 @@ export async function POST(req: Request) {
     // Get latest metal rate
     const metalRate = await prisma.metalRate.findFirst({
       where: {
-        metal,
-        purity
+        metal: {
+          equals: metal,
+          mode: "insensitive"
+        },
+        purity: {
+          equals: purity || "",
+          mode: "insensitive"
+        }
       },
       orderBy: {
-        id: "desc"
+        updatedAt: "desc"
       }
     })
 
@@ -89,15 +95,48 @@ export async function POST(req: Request) {
 }
 
 }
+
 export async function GET() {
   try {
     const products = await prisma.product.findMany({
-      orderBy: {
-        id: "desc"
-      }
+      include: { images: true, category: true },
+      orderBy: { createdAt: "desc" }
     })
 
-    return NextResponse.json(products)
+    const updatedProducts = await Promise.all(
+      products.map(async (product) => {
+
+        const metalRate = await prisma.metalRate.findFirst({
+          where: {
+            metal: {
+              equals: product.type,
+              mode: "insensitive"
+            },
+            purity: {
+              equals: product.purity || "",
+              mode: "insensitive"
+            }
+          },
+          orderBy: { updatedAt: "desc" }
+        })
+
+        let dynamicPrice = product.price || 0
+        if (metalRate) {
+          const currentRate = metalRate.adminPrice ?? metalRate.price ?? 0
+          const metalPrice = currentRate * (product.weight || 0)
+          const makingPrice = (product.makingCharges || 0) * (product.weight || 0)
+          dynamicPrice = metalPrice + makingPrice + (product.stonePrice || 0)
+        }
+
+        return {
+          ...product,
+          dynamicPrice: dynamicPrice
+        }
+      })
+    )
+
+    return NextResponse.json(updatedProducts)
+
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch products" },

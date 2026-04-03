@@ -1,21 +1,59 @@
 @import "tailwindcss";
 
-body{
-    background-color: #e0e6f6;
+@theme {
+  --font-playfair: var(--font-playfair);
+  --font-inter: var(--font-inter);
 
+  --color-primary: #56678a; /* Original Slate Blue */
+  --color-secondary: #1F2933; /* Dark Slate */
+  --color-accent: #8e9dbd; /* Light Slate */
+  --color-background-base: #e0e6f6;
+}
+
+:root {
+  --foreground-rgb: 31, 41, 51;
+  --background-rgb: 224, 230, 246;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background-color: #e0e6f6;
+  min-height: 100vh;
+  font-family: var(--font-inter);
 }
 
 .logo {
-  font-family: 'Playfair Display', serif;
-  font-weight: 600;
-  letter-spacing: 1px;
-  color: #1F2933;
+  font-family: var(--font-playfair);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--color-secondary);
 }
+
 .logo-gradient {
-  font-family: 'Playfair Display', serif;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-family: var(--font-playfair);
+  font-weight: 700;
+  letter-spacing: 0.05em;
   background: linear-gradient(100deg, #56678a, #1F2933);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+@layer utilities {
+  .mesh-gradient {
+    background-color: #e0e6f6;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+      radial-gradient(at 50% 0%, hsla(225,39%,20%,1) 0, transparent 50%), 
+      radial-gradient(at 100% 0%, hsla(225,39%,30%,1) 0, transparent 50%);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
 }

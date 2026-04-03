@@ -164,7 +164,9 @@ model Product {
 
   cartItems     CartItem[]
   wishlistItems WishlistItem[]
+  tags          String[]
 }
+
 
 //////////////////////////////
 // PRODUCT VARIANTS (size, weight options)
