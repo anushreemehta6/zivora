@@ -21,6 +21,12 @@ import giftingBg from "./gifting_bg.png";
 import userAvatar1 from "./user_avatar_1.png";
 import userAvatar2 from "./user_avatar_2.png";
 import userAvatar3 from "./user_avatar_3.png";
+import catMangalsutra from "./cat_mangalsutra.png";
+import catToering from "./cat_toering.png";
+import catPendants from "./cat_pendants.png";
+import catAnklets from "./cat_anklets.png";
+import catBangles from "./cat_bangles.png";
+import catNosepins from "./cat_nosepins.png";
 
 export {
     bg,
@@ -45,6 +51,12 @@ export {
     giftingBg,
     userAvatar1,
     userAvatar2,
-    userAvatar3
+    userAvatar3,
+    catMangalsutra,
+    catToering,
+    catPendants,
+    catAnklets,
+    catBangles,
+    catNosepins
 }
 

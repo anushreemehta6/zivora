@@ -2,7 +2,20 @@
 
 import React from "react";
 import Image from "next/image";
-import { bg, heroComposition, rings, earrings, necklaces, bracelets } from "@/assets";
+import { 
+  bg, 
+  heroComposition, 
+  rings, 
+  earrings, 
+  necklaces, 
+  bracelets, 
+  catMangalsutra,
+  catToering,
+  catPendants,
+  catAnklets,
+  catBangles,
+  catNosepins
+} from "@/assets";
 import Button from "@/components/ui/Button";
 import { ArrowRight, Star, ShieldCheck, Truck, RefreshCcw } from "lucide-react";
 import Link from "next/link";
@@ -19,6 +32,12 @@ const categories = [
   { name: "Earrings", image: earrings, slug: "earrings" },
   { name: "Necklaces", image: necklaces, slug: "necklaces" },
   { name: "Bracelets", image: bracelets, slug: "bracelets" },
+  { name: "Mangalsutra", image: catMangalsutra, slug: "mangalsutra" },
+  { name: "Toe Rings", image: catToering, slug: "toering" },
+  { name: "Pendants", image: catPendants, slug: "pendants" },
+  { name: "Anklets", image: catAnklets, slug: "anklets" },
+  { name: "Bangles", image: catBangles, slug: "bangles" },
+  { name: "Nose Pins", image: catNosepins, slug: "nosepins" },
 ];
 
 const HomePage = () => {
@@ -108,24 +127,27 @@ const HomePage = () => {
       <ShopByRecipient />
       <ShopByOccasion />
 
-      {/* Categories Grid */}
+      {/* Categories Horizontal Scroll */}
       <section className="max-w-7xl mx-auto px-6 md:px-8 w-full py-12 md:py-24 overflow-hidden relative">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
           <div className="group">
             <h2 className="text-3xl font-bold text-secondary mb-2 uppercase tracking-tight">Shop by Category</h2>
             <div className="h-1 w-20 bg-primary rounded-full group-hover:w-40 transition-all duration-500" />
           </div>
-          <Link href="/products" className="text-sm font-bold text-gray-400 hover:text-primary transition-colors flex items-center gap-2 uppercase tracking-widest">
-            View All Collections <ArrowRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest hidden md:block">Scroll to explore</span>
+            <Link href="/products" className="text-sm font-bold text-gray-400 hover:text-primary transition-colors flex items-center gap-2 uppercase tracking-widest">
+              View All <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="flex overflow-x-auto pb-8 gap-6 md:gap-8 snap-x snap-mandatory hide-scrollbar">
           {categories.map((cat) => (
             <Link
               key={cat.slug}
-              href={`/products?category=${cat.slug}`}
-              className="group"
+              href={`/products/${cat.slug}`}
+              className="flex-shrink-0 w-[170px] md:w-[280px] snap-start group"
             >
               <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-background-base shadow-sm ring-1 ring-black/5 transition-all duration-500 group-hover:shadow-2xl group-hover:ring-primary/20">
                 <Image

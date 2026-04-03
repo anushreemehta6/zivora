@@ -4,17 +4,17 @@ import { Filter, ChevronDown, ShoppingBag, Star } from "lucide-react"
 
 import WishlistToggle from "@/components/product/WishlistToggle"
 
-async function getProducts(searchParams: any) {
-
-  const { category, sort, minPrice, maxPrice } = await searchParams;
+async function getProducts(filters: any) {
+  const { category, occasion, bond, minPrice, maxPrice, sort } = filters;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   
-  // Build query string
   const query = new URLSearchParams();
   if (category) query.append("category", category);
+  if (occasion) query.append("occasion", occasion);
+  if (bond) query.append("bond", bond);
+  if (minPrice) query.append("minPrice", minPrice.toString());
+  if (maxPrice) query.append("maxPrice", maxPrice.toString());
   if (sort) query.append("sort", sort);
-  if (minPrice) query.append("minPrice", minPrice);
-  if (maxPrice) query.append("maxPrice", maxPrice);
 
   const res = await fetch(
     `${baseUrl}/api/products?${query.toString()}`,
@@ -26,17 +26,57 @@ async function getProducts(searchParams: any) {
   return res.json()
 }
 
-export default async function ProductsPage({ searchParams }: { searchParams: any }) {
-  const products = await getProducts(searchParams)
-  const { category } = await searchParams;
+export default async function ProductsPage({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ filter?: string[] }>,
+  searchParams: Promise<any> 
+}) {
+  const { filter } = await params;
+  const sParams = await searchParams;
+
+  // Initialize filters from searchParams as base
+  let category = sParams.category;
+  let occasion = sParams.occasion;
+  let bond = sParams.bond;
+  let minPrice = sParams.minPrice;
+  let maxPrice = sParams.maxPrice;
+  const sort = sParams.sort;
+
+  // Override / Extend with path segments
+  if (filter && filter.length > 0) {
+    if (filter.length === 1) {
+      // Assume single segment is category: /products/rings
+      category = filter[0];
+    } else if (filter.length === 2) {
+      const [type, slug] = filter;
+      if (type === "occasion") occasion = slug;
+      if (type === "bond") bond = slug;
+      if (type === "price") {
+        if (slug === "under-1999") maxPrice = 1999;
+        else if (slug === "2000-4999") { minPrice = 2000; maxPrice = 4999; }
+        else if (slug === "5000-9999") { minPrice = 5000; maxPrice = 9999; }
+        else if (slug === "luxury") minPrice = 10000;
+      }
+    }
+  }
+
+  const products = await getProducts({ category, occasion, bond, minPrice, maxPrice, sort })
+
+  // Derive Display Title
+  let displayTitle = "All Jewelry";
+  if (category) displayTitle = `${category.charAt(0).toUpperCase() + category.slice(1)} Collection`;
+  if (occasion) displayTitle = `${occasion.charAt(0).toUpperCase() + occasion.slice(1)} Collection`;
+  if (bond) displayTitle = `Gifts for ${bond.replace("-", " ")}`;
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-12">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
         <div>
-          <h1 className="text-4xl font-bold text-secondary mb-2">
-            {category ? `${category.charAt(0).toUpperCase() + category.slice(1)} Collection` : "All Jewelry"}
+          <h1 className="text-4xl font-bold text-secondary mb-2 capitalize">
+            {displayTitle}
           </h1>
           <p className="text-gray-500 font-medium">Discover your perfect piece of elegance</p>
         </div>
@@ -70,10 +110,10 @@ export default async function ProductsPage({ searchParams }: { searchParams: any
               <div>
                 <h4 className="font-bold text-sm uppercase tracking-wider text-gray-400 mb-4">Category</h4>
                 <div className="space-y-3">
-                  {["Rings", "Earrings", "Necklaces", "Bracelets", "Pendants"].map((cat) => (
+                  {["Rings", "Earrings", "Necklaces", "Bracelets", "Pendants", "Mangalsutra", "Bangles", "Anklets"].map((cat) => (
                     <Link 
                       key={cat} 
-                      href={`/products?category=${cat.toLowerCase()}`}
+                      href={`/products/${cat.toLowerCase()}`}
                       className={`block text-sm font-medium transition-colors hover:text-primary ${category === cat.toLowerCase() ? "text-primary font-bold" : "text-gray-600"}`}
                     >
                       {cat}
@@ -87,10 +127,10 @@ export default async function ProductsPage({ searchParams }: { searchParams: any
               <div>
                 <h4 className="font-bold text-sm uppercase tracking-wider text-gray-400 mb-4">Price Range</h4>
                 <div className="space-y-3">
-                  <Link href="/products?maxPrice=5000" className="block text-sm font-medium text-gray-600 hover:text-primary">Under ₹5,000</Link>
-                  <Link href="/products?minPrice=5000&maxPrice=15000" className="block text-sm font-medium text-gray-600 hover:text-primary">₹5,000 - ₹15,000</Link>
-                  <Link href="/products?minPrice=15000&maxPrice=30000" className="block text-sm font-medium text-gray-600 hover:text-primary">₹15,000 - ₹30,000</Link>
-                  <Link href="/products?minPrice=30000" className="block text-sm font-medium text-gray-600 hover:text-primary">Above ₹30,000</Link>
+                  <Link href="/products/price/under-1999" className="block text-sm font-medium text-gray-600 hover:text-primary">Under ₹1,999</Link>
+                  <Link href="/products/price/2000-4999" className="block text-sm font-medium text-gray-600 hover:text-primary">₹2,000 - ₹4,999</Link>
+                  <Link href="/products/price/5000-9999" className="block text-sm font-medium text-gray-600 hover:text-primary">₹5,000 - ₹9,999</Link>
+                  <Link href="/products/price/luxury" className="block text-sm font-medium text-gray-600 hover:text-primary">Above ₹10,000</Link>
                 </div>
               </div>
 
@@ -132,7 +172,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: any
                         src={product.images[0].url}
                         alt={product.name}
                         fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-200">
@@ -145,7 +185,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: any
                           id: product.id,
                           productId: product.id,
                           name: product.name,
-                          price: product.dynamicPrice || 0,
+                          price: product.dynamicPrice || product.price || 0,
                           image: product.images?.[0]?.url || ""
                         }} 
                       />
@@ -168,7 +208,9 @@ export default async function ProductsPage({ searchParams }: { searchParams: any
                     </div>
                     <h2 className="text-lg font-bold text-secondary group-hover:text-primary transition-colors line-clamp-1 mb-2">{product.name}</h2>
                     <div className="flex items-center gap-3">
-                      <p className="text-xl font-bold text-secondary">₹{product.dynamicPrice?.toLocaleString()}</p>
+                      <p className="text-xl font-bold text-secondary">
+                        ₹{(product.dynamicPrice || product.price || 0).toLocaleString()}
+                      </p>
                       {product.comparePrice && (
                         <p className="text-sm text-gray-400 line-through">₹{product.comparePrice.toLocaleString()}</p>
                       )}

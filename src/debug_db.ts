@@ -1,23 +1,25 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../lib/prisma';
 
-const prisma = new PrismaClient();
+async function main() {
+  try {
+    const products = await prisma.product.findMany({
+      include: { category: true, images: true },
+      take: 5
+    });
+    console.log('--- PRODUCTS ---');
+    console.log(JSON.stringify(products, null, 2));
 
-async function checkMetalRates() {
-  const rates = await prisma.metalRate.findMany();
-  console.log("METAL RATES IN DB:", JSON.stringify(rates, null, 2));
-
-  const products = await prisma.product.findMany({
-    take: 5,
-    include: { category: true }
-  });
-  console.log("SAMPLE PRODUCTS:", JSON.stringify(products.map(p => ({
-    name: p.name,
-    type: p.type,
-    purity: p.purity,
-    price: p.price
-  })), null, 2));
+    const metalRates = await prisma.metalRate.findMany();
+    console.log('--- METAL RATES ---');
+    console.log(JSON.stringify(metalRates, null, 2));
+  } catch (err: any) {
+    console.error('--- DEBUG ERROR ---');
+    console.error(err.message || err);
+    if (err.code) console.error('Error Code:', err.code);
+    if (err.meta) console.error('Error Meta:', JSON.stringify(err.meta));
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
-checkMetalRates()
-  .catch(console.error)
-  .finally(() => prisma.$disconnect());
+main();

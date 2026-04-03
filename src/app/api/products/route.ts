@@ -6,18 +6,37 @@ export async function GET(req: Request) {
 
   const search = searchParams.get("search") || ""
   const category = searchParams.get("category")
+  const occasion = searchParams.get("occasion")
+  const bond = searchParams.get("bond")
+  const minPrice = Number(searchParams.get("minPrice")) || undefined
+  const maxPrice = Number(searchParams.get("maxPrice")) || undefined
+  
   const page = Number(searchParams.get("page")) || 1
   const limit = 12
 
   const products = await prisma.product.findMany({
     where: {
       name: { contains: search, mode: "insensitive" },
+      isActive: true,
       category: category
         ? {
             slug: category
           }
         : undefined,
-      isActive: true
+      collection: occasion
+        ? {
+            slug: occasion
+          }
+        : undefined,
+      tags: bond
+        ? {
+            has: bond
+          }
+        : undefined,
+      price: {
+        gte: minPrice,
+        lte: maxPrice
+      }
     },
     include: {
       images: true,
@@ -30,7 +49,39 @@ export async function GET(req: Request) {
     orderBy: { createdAt: "desc" }
   })
 
-  return NextResponse.json(products)
+  // Add Dynamic Pricing Calculation
+  const updatedProducts = await Promise.all(
+    products.map(async (product) => {
+      const metalRate = await prisma.metalRate.findFirst({
+        where: {
+          metal: {
+            equals: product.type,
+            mode: "insensitive"
+          },
+          purity: {
+            equals: product.purity || "",
+            mode: "insensitive"
+          }
+        },
+        orderBy: { updatedAt: "desc" }
+      })
+
+      let dynamicPrice = product.price || 0
+      if (metalRate) {
+        const currentRate = metalRate.adminPrice ?? metalRate.price ?? 0
+        const metalPrice = currentRate * (product.weight || 0)
+        const makingPrice = (product.makingCharges || 0) * (product.weight || 0)
+        dynamicPrice = metalPrice + makingPrice + (product.stonePrice || 0)
+      }
+
+      return {
+        ...product,
+        dynamicPrice: dynamicPrice
+      }
+    })
+  )
+
+  return NextResponse.json(updatedProducts)
 }
 
 export async function POST(req: Request) {
