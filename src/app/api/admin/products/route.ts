@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       description,
       type,
       categoryId,
-      image,
+      images = [],
       tags = []
     } = body
 
@@ -73,11 +73,7 @@ export async function POST(req: Request) {
 
     // 🔥 FIX IMAGE HERE
     images: {
-      create: [
-        {
-          url: image
-        }
-      ]
+      create: images.map((url: string) => ({ url }))
     }
   }
 })

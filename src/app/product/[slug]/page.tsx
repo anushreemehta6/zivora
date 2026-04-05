@@ -2,9 +2,9 @@ import Image from "next/image"
 import { Star, ShieldCheck, Truck, RefreshCcw, Heart, Share2, Info } from "lucide-react"
 import ProductActions from "@/components/product/ProductActions"
 import ProductTabs from "@/components/product/ProductTabs"
+import ProductGallery from "@/components/product/ProductGallery"
 
 async function getProduct(slug: string) {
-
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   const res = await fetch(
     `${baseUrl}/api/products/${slug}`,
@@ -25,31 +25,7 @@ export default async function Product({ params }: any) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
         
         {/* Left: Image Gallery */}
-        <div className="space-y-6">
-          <div className="relative aspect-square overflow-hidden rounded-3xl bg-gray-50 border border-gray-100 group">
-            {product.images?.[0]?.url && (
-              <Image
-                src={product.images[0].url}
-                alt={product.name}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                priority
-              />
-            )}
-            <button className="absolute top-6 right-6 p-3 rounded-full bg-white/80 backdrop-blur shadow-sm hover:bg-white transition-colors text-gray-400 hover:text-red-500">
-              <Heart size={20} />
-            </button>
-          </div>
-          
-          {/* Thumbnails (placeholder for multiple images) */}
-          <div className="grid grid-cols-4 gap-4">
-            {product.images?.map((img: any, idx: number) => (
-              <div key={idx} className="aspect-square rounded-xl overflow-hidden border-2 border-primary bg-gray-50 cursor-pointer">
-                <Image src={img.url} alt={product.name} width={150} height={150} className="object-cover" />
-              </div>
-            ))}
-          </div>
-        </div>
+        <ProductGallery images={product.images || []} productName={product.name} />
 
         {/* Right: Product Info */}
         <div className="flex flex-col">

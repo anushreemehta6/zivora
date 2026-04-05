@@ -10,7 +10,8 @@ import {
   Coins,
   ChevronRight,
   Sparkles,
-  Search
+  Search,
+  Trash2
 } from "lucide-react"
 import Button from "@/components/ui/Button"
 import { toast } from "react-hot-toast"
@@ -26,7 +27,7 @@ export default function AddProductPage() {
     description: "",
     type: "",
     categoryId: "",
-    image: "",
+    images: [] as string[],
     tags: [] as string[]
   })
 
@@ -64,38 +65,64 @@ export default function AddProductPage() {
     })
   }
 
-  const handleImageUpload = async (e: any) => {
-    const file = e.target.files[0]
-    if (!file) return
+  const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
 
     setUploading(true)
 
-    const data = new FormData()
-    data.append("file", file)
-    data.append("upload_preset", "my_unsigned_preset")
-
     try {
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        {
-          method: "POST",
-          body: data
+      const uploadedUrls: string[] = []
+      for (let i = 0; i < files.length; i++) {
+        const formData = new FormData()
+        formData.append("file", files[i])
+        formData.append("upload_preset", "my_unsigned_preset") // Using the original working preset
+
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        )
+        const data = await res.json()
+        
+        if (data.secure_url) {
+          uploadedUrls.push(data.secure_url)
+        } else {
+          console.error("Cloudinary error:", data)
+          toast.error(`Upload failed: ${data.error?.message || "Unknown error"}`)
         }
-      )
-      const result = await res.json()
-      setForm((prev) => ({
-        ...prev,
-        image: result.secure_url
-      }))
-    } catch (e) {
-      console.error("Image upload failed", e)
+      }
+      
+      if (uploadedUrls.length > 0) {
+        setForm(prev => ({
+          ...prev,
+          images: [...prev.images, ...uploadedUrls]
+        }))
+        toast.success(`${uploadedUrls.length} image(s) processed`)
+      }
+    } catch (error: any) {
+      console.error("Upload error:", error)
+      toast.error("Upload failed. Check your connection or Cloudinary cloud name.")
     } finally {
       setUploading(false)
     }
   }
 
+  const removeImage = (index: number) => {
+    setForm({
+      ...form,
+      images: form.images.filter((_, i) => i !== index)
+    })
+  }
+
   const handleSubmit = async (e: any) => {
     e.preventDefault()
+    if (uploading) {
+      toast.error("Please wait for all images to finish uploading.")
+      return
+    }
     const loadingToast = toast.loading("Registering product...")
 
     try {
@@ -125,7 +152,7 @@ export default function AddProductPage() {
           description: "",
           type: "",
           categoryId: "",
-          image: "",
+          images: [],
           tags: []
         })
       } else {
@@ -324,38 +351,55 @@ export default function AddProductPage() {
 
         {/* Sidebar Info & Image */}
         <div className="lg:col-span-4 space-y-8">
-          <div className="bg-secondary rounded-[2.5rem] p-10 text-white min-h-[400px] flex flex-col items-center justify-center text-center">
-            <h3 className="text-xl font-bold  mb-6 text-primary">Jewelry Visuals</h3>
+          <div className="bg-secondary rounded-[2.5rem] p-8 text-white min-h-[400px] flex flex-col items-center justify-start text-center">
+            <h3 className="text-xl font-bold mb-6 text-primary">Jewelry Visuals</h3>
             
-            <div className="relative w-full aspect-square bg-white/5 rounded-3xl border border-dashed border-white/20 flex flex-col items-center justify-center overflow-hidden transition-all hover:bg-white/10 group">
-              {form.image ? (
-                <>
-                  <img src={form.image} alt="Preview" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                    <label className="cursor-pointer p-4 rounded-full bg-white text-secondary transition-transform hover:scale-110">
-                      <Upload size={20} />
-                      <input type="file" hidden onChange={handleImageUpload} />
-                    </label>
-                  </div>
-                </>
-              ) : (
-                <label className="w-full h-full cursor-pointer flex flex-col items-center justify-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-primary border border-white/10">
-                    <Upload size={32} />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-bold">Select high-res image</p>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">SVG, PNG, JPG (Max 5MB)</p>
-                  </div>
-                  <input type="file" hidden onChange={handleImageUpload} />
-                </label>
+            <div className="w-full space-y-4">
+              {/* Main Upload Area */}
+              <label className="w-full py-10 cursor-pointer flex flex-col items-center justify-center gap-4 bg-white/5 rounded-3xl border border-dashed border-white/20 hover:bg-white/10 transition-all group">
+                <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-primary border border-white/10">
+                  <Upload size={28} />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-bold">Add product photos</p>
+                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Multiple selection enabled</p>
+                </div>
+                <input type="file" hidden multiple onChange={uploadImage} />
+              </label>
+
+              {/* Preview Grid */}
+              {form.images.length > 0 && (
+                <div className="grid grid-cols-2 gap-3 w-full">
+                  {form.images.map((url, idx) => (
+                    <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden group border border-white/10">
+                      <img src={url} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
+                      <button 
+                        onClick={() => removeImage(idx)}
+                        className="absolute top-2 right-2 p-1.5 rounded-lg bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                      {idx === 0 && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-primary/90 text-secondary text-[8px] font-black uppercase py-1 tracking-tighter">
+                          Primary Shield
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
-              {uploading && <div className="absolute inset-0 bg-secondary/80 backdrop-blur-sm flex items-center justify-center text-primary font-bold">Uploading...</div>}
+
+              {uploading && (
+                <div className="w-full py-4 bg-white/5 rounded-2xl flex items-center justify-center gap-3 animate-pulse">
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs font-bold text-primary uppercase tracking-widest">Processing Uploads...</span>
+                </div>
+              )}
             </div>
 
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-8 flex items-center gap-2">
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-auto pt-8 flex items-center gap-2">
               <Info size={12} /> 
-              Recommended: 1080x1350px
+              Recommended: 1080x1350px (Portrait)
             </p>
           </div>
 
