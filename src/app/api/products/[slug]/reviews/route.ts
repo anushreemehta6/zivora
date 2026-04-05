@@ -3,10 +3,10 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const body = await req.json();
     const { rating, comment, userId } = body;
 
@@ -14,6 +14,17 @@ export async function POST(
       return NextResponse.json(
         { error: "Rating and User ID are required" },
         { status: 400 }
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Authorized user not found. Please log in again." },
+        { status: 401 }
       );
     }
 

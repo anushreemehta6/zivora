@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma"
+import { prisma } from "./prisma"
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google";
@@ -58,25 +58,26 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-  // First login
-  if (user) {
-    token.id = user.id
-    token.role = user.role
-  }
+      // If we have an email, ensure we have the correct DB ID and Role in the token
+      if (token.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email }
+        });
 
-  // 🔥 ALWAYS fetch role from DB (for Google users)
-  if (!token.role && token.email) {
-    const dbUser = await prisma.user.findUnique({
-      where: { email: token.email }
-    })
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.role = dbUser.role;
+        }
+      }
 
-    if (dbUser) {
-      token.role = dbUser.role
-    }
-  }
+      // First login handler (merges initial user data)
+      if (user) {
+        token.id = token.id || user.id;
+        token.role = token.role || user.role;
+      }
 
-  return token
-},
+      return token;
+    },
 
     async session({ session, token }) {
       if (session.user) {

@@ -1,6 +1,6 @@
 import axios from "axios"
-import { prisma } from "../../lib/prisma"
-import { fetchGoldPrice } from "../../lib/metalprice"
+import { prisma } from "../lib/prisma"
+import { fetchGoldPrice } from "../lib/metalprice"
 
 export async function updateMetalRates() {
   const prices = await fetchGoldPrice()

@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma"
+import { prisma } from "./prisma"
 
 export async function calculateProductPrice(product: any) {
   const metalRate = await prisma.metalRate.findUnique({

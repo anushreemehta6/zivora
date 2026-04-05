@@ -1,4 +1,4 @@
-import { prisma } from "../../../../lib/prisma"
+import { prisma } from "@/lib/prisma"
 
 export async function GET() {
   const banners = await prisma.banner.findMany({

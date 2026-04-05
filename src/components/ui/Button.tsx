@@ -1,4 +1,4 @@
-import { buttonStyles } from "../../../lib/ui";
+import { buttonStyles } from "@/lib/ui";
 import clsx from "clsx";
 
 type Props = {

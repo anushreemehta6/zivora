@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Star, User, Calendar, MessageSquare, Plus, ShieldCheck } from "lucide-react";
+import { Star, User, Calendar, MessageSquare, Plus, ShieldCheck, LogIn } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { useSession, signIn } from "next-auth/react";
 
 type Review = {
   id: string;
@@ -32,19 +33,22 @@ export default function ProductReviews({
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: session } = useSession();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // For now, using a mock userId until real auth is verified
-      const mockUserId = "test-user-id";
-      
+      if (!session?.user) {
+        signIn();
+        return;
+      }
+
       const res = await fetch(`/api/products/${slug}/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rating, comment, userId: mockUserId })
+        body: JSON.stringify({ rating, comment, userId: (session.user as any).id })
       });
 
       if (res.ok) {
@@ -82,14 +86,25 @@ export default function ProductReviews({
         </div>
         
         {!showForm && (
-          <Button 
-            variant="gold" 
-            className="group px-8 uppercase text-xs font-bold tracking-widest"
-            onClick={() => setShowForm(true)}
-          >
-            <Plus size={18} className="mr-2" />
-            Write a Review
-          </Button>
+          session ? (
+            <Button 
+              variant="gold" 
+              className="group px-8 uppercase text-xs font-bold tracking-widest"
+              onClick={() => setShowForm(true)}
+            >
+              <Plus size={18} className="mr-2" />
+              Write a Review
+            </Button>
+          ) : (
+            <Button 
+              variant="outline" 
+              className="group px-8 uppercase text-[10px] font-bold tracking-widest border-gray-200"
+              onClick={() => signIn()}
+            >
+              <LogIn size={16} className="mr-2" />
+              Log in to review
+            </Button>
+          )
         )}
       </div>
 

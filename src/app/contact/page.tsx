@@ -12,10 +12,31 @@ export default function ContactPage() {
     message: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Thank you for reaching out! We'll get back to you shortly.");
-    setForm({ name: "", email: "", subject: "", message: "" });
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form)
+      });
+
+      if (response.ok) {
+        alert("Thank you for reaching out! Your message has been saved.");
+        setForm({ name: "", email: "", subject: "", message: "" });
+      } else {
+        alert("Something went wrong. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      alert("Something went wrong. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -152,9 +173,14 @@ export default function ContactPage() {
               />
             </div>
 
-            <Button type="submit" variant="gold" className="w-full py-5 text-sm font-bold uppercase tracking-widest group shadow-2xl shadow-primary/20">
-              Send Message
-              <Send size={16} className="ml-3 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+            <Button 
+              type="submit" 
+              variant="gold" 
+              disabled={loading}
+              className="w-full py-5 text-sm font-bold uppercase tracking-widest group shadow-2xl shadow-primary/20 disabled:opacity-50"
+            >
+              {loading ? "Sending..." : "Send Message"}
+              {!loading && <Send size={16} className="ml-3 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}
             </Button>
           </form>
         </div>

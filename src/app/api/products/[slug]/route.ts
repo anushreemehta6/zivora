@@ -1,6 +1,6 @@
-import { prisma } from "../../../../../lib/prisma"
+import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
-import { calculateProductPrice } from "../../../../../lib/pricing"
+import { calculateProductPrice } from "@/lib/pricing"
 
 // export async function GET(req: Request, { params }: any) {
 //   const product = await prisma.product.findUnique({

@@ -1,8 +1,8 @@
-import { prisma } from "../../../../lib/prisma"
+import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
-import { authOptions } from "../../../../lib/auth"
+import { authOptions } from "@/lib/auth"
 import { NextResponse } from "next/server"
-import { calculateProductPrice } from "../../../../lib/pricing"
+import { calculateProductPrice } from "@/lib/pricing"
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
