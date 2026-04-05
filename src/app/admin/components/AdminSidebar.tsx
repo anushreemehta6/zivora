@@ -11,12 +11,14 @@ import {
   Image as ImageIcon, 
   TicketPercent,
   Settings,
-  LogOut
+  LogOut,
+  Mail
 } from "lucide-react"
 
 const menu = [
   { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
   { name: "Analytics", path: "/admin/analytics", icon: BarChart3 },
+  { name: "Messages", path: "/admin/messages", icon: Mail },
   { name: "Add Category", path: "/admin/category", icon: Tag },
   { name: "Add Product", path: "/admin/product", icon: PackagePlus },
   { name: "Silver Price", path: "/admin/silver-price", icon: Coins },
