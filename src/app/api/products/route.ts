@@ -8,6 +8,7 @@ export async function GET(req: Request) {
   const category = searchParams.get("category")
   const occasion = searchParams.get("occasion")
   const bond = searchParams.get("bond")
+  const tag = searchParams.get("tag")
   const minPrice = Number(searchParams.get("minPrice")) || undefined
   const maxPrice = Number(searchParams.get("maxPrice")) || undefined
   
@@ -28,9 +29,9 @@ export async function GET(req: Request) {
             slug: occasion
           }
         : undefined,
-      tags: bond
+      tags: (tag || bond)
         ? {
-            has: bond
+            has: tag || bond || ""
           }
         : undefined,
       price: {

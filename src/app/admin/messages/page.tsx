@@ -15,6 +15,7 @@ import {
   ArrowLeft
 } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { toast } from "react-hot-toast";
 
 interface ContactMessage {
   id: string;
@@ -51,14 +52,19 @@ export default function AdminMessagesPage() {
 
   const deleteMessage = async (id: string) => {
     if (!confirm("Are you sure you want to delete this message?")) return;
+    const loadingToast = toast.loading("Deleting message...");
     try {
       const res = await fetch(`/api/admin/messages?id=${id}`, { method: "DELETE" });
       if (res.ok) {
         setMessages(messages.filter((m) => m.id !== id));
         if (selectedMessage?.id === id) setSelectedMessage(null);
+        toast.success("Message deleted successfully", { id: loadingToast });
+      } else {
+        toast.error("Failed to delete message", { id: loadingToast });
       }
     } catch (error) {
       console.error("Error deleting message:", error);
+      toast.error("An error occurred while deleting the message", { id: loadingToast });
     }
   };
 

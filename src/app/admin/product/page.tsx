@@ -13,6 +13,7 @@ import {
   Search
 } from "lucide-react"
 import Button from "@/components/ui/Button"
+import { toast } from "react-hot-toast"
 
 export default function AddProductPage() {
   const [form, setForm] = useState({
@@ -25,8 +26,19 @@ export default function AddProductPage() {
     description: "",
     type: "",
     categoryId: "",
-    image: ""
+    image: "",
+    tags: [] as string[]
   })
+
+  const standardTags = [
+    { id: "for-her", name: "Shop for Her" },
+    { id: "for-him", name: "Shop for Him" },
+    { id: "gift-sets", name: "Gift Sets" },
+    { id: "anniversary", name: "Anniversary" },
+    { id: "birthday", name: "Birthday" },
+    { id: "wedding", name: "Wedding" },
+    { id: "trending", name: "Trending" }
+  ]
 
   const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([])
   const [loading, setLoading] = useState(false)
@@ -84,7 +96,7 @@ export default function AddProductPage() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
-    setLoading(true)
+    const loadingToast = toast.loading("Registering product...")
 
     try {
       const res = await fetch("/api/admin/products", {
@@ -102,7 +114,7 @@ export default function AddProductPage() {
       })
 
       if (res.ok) {
-        alert("Product created ✅")
+        toast.success("Product published successfully! ✅", { id: loadingToast })
         setForm({
           name: "",
           metal: "silver",
@@ -113,14 +125,15 @@ export default function AddProductPage() {
           description: "",
           type: "",
           categoryId: "",
-          image: ""
+          image: "",
+          tags: []
         })
       } else {
         const data = await res.json()
-        alert(data.error)
+        toast.error(data.error || "Failed to publish product", { id: loadingToast })
       }
     } catch (err) {
-      alert("Something went wrong")
+      toast.error("Something went wrong. Please try again.", { id: loadingToast })
     } finally {
       setLoading(false)
     }
@@ -214,9 +227,37 @@ export default function AddProductPage() {
                     <option value="SILVER">Silver</option>
                     <option value="DIAMOND">Diamond</option>
                     <option value="PLATINUM">Platinum</option>
-                    <option value="GEMSTONE">Gemstone</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="space-y-4 pt-4">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 flex items-center gap-2">
+                  <PackagePlus size={12} className="text-primary" />
+                  Product Tags & Collections
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {standardTags.map((tag) => (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      onClick={() => {
+                        const newTags = form.tags.includes(tag.id)
+                          ? form.tags.filter(t => t !== tag.id)
+                          : [...form.tags, tag.id];
+                        setForm({ ...form, tags: newTags });
+                      }}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                        form.tags.includes(tag.id)
+                          ? "bg-secondary text-primary border-secondary shadow-lg shadow-secondary/20"
+                          : "bg-gray-50 text-gray-400 border-transparent hover:border-primary/20"
+                      }`}
+                    >
+                      {tag.name}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-gray-400 font-medium italic">Select one or more tags to categorize this product into special store collections.</p>
               </div>
             </div>
           </div>
@@ -327,7 +368,7 @@ export default function AddProductPage() {
               Before finishing, ensure that the product purity matches the metal type. Dynamic pricing will be calculated based on the weight and current metal rates.
             </p>
             <Button 
-              onClick={handleSubmit} 
+              onClick={(e) => handleSubmit(e)} 
               disabled={loading || uploading} 
               variant="gold" 
               className="w-full py-5 text-sm font-bold uppercase tracking-widest group shadow-2xl shadow-primary/20"

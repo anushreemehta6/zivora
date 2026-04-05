@@ -20,6 +20,7 @@ export async function POST(req: Request) {
       type,
       categoryId,
       image,
+      tags = []
     } = body
 
     // Get latest metal rate
@@ -64,6 +65,7 @@ export async function POST(req: Request) {
     makingCharges: makingCharge,
     stonePrice,
     price: basePrice,
+    tags: tags,
 
     category: {
       connect: { id: categoryId } // ✅ STRING (correct)

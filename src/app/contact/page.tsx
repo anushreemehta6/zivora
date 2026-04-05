@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Mail, Phone, MapPin, Send, MessageSquare, Clock, Globe } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { toast } from "react-hot-toast";
 
 export default function ContactPage() {
   const [form, setForm] = useState({
@@ -16,7 +17,7 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    const loadingToast = toast.loading("Sending your message...");
 
     try {
       const response = await fetch("/api/contact", {
@@ -26,14 +27,14 @@ export default function ContactPage() {
       });
 
       if (response.ok) {
-        alert("Thank you for reaching out! Your message has been saved.");
+        toast.success("Thank you for reaching out! Your message has been saved.", { id: loadingToast });
         setForm({ name: "", email: "", subject: "", message: "" });
       } else {
-        alert("Something went wrong. Please try again later.");
+        toast.error("Something went wrong. Please try again later.", { id: loadingToast });
       }
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      alert("Something went wrong. Please check your connection.");
+      toast.error("Something went wrong. Please check your connection.", { id: loadingToast });
     } finally {
       setLoading(false);
     }

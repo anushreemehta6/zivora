@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Star, User, Calendar, MessageSquare, Plus, ShieldCheck, LogIn } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { useSession, signIn } from "next-auth/react";
+import { toast } from "react-hot-toast";
 
 type Review = {
   id: string;
@@ -37,14 +38,14 @@ export default function ProductReviews({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    if (!session?.user) {
+      signIn();
+      return;
+    }
+
+    const loadingToast = toast.loading("Publishing your review...");
 
     try {
-      if (!session?.user) {
-        signIn();
-        return;
-      }
-
       const res = await fetch(`/api/products/${slug}/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -53,7 +54,6 @@ export default function ProductReviews({
 
       if (res.ok) {
         const newReview = await res.json();
-        // Since the API returns user: { name } we might need to mock it if DB relation isn't perfect yet
         setReviews([{ 
           ...newReview, 
           user: { name: "You" } 
@@ -61,9 +61,13 @@ export default function ProductReviews({
         setShowForm(false);
         setComment("");
         setRating(5);
+        toast.success("Review posted successfully! Thank you for your feedback.", { id: loadingToast });
+      } else {
+        toast.error("Failed to post review. Please try again.", { id: loadingToast });
       }
     } catch (error) {
       console.error("Failed to submit review", error);
+      toast.error("An error occurred. Please check your connection.", { id: loadingToast });
     } finally {
       setIsSubmitting(false);
     }

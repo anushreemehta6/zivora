@@ -5,13 +5,14 @@ import { Filter, ChevronDown, ShoppingBag, Star } from "lucide-react"
 import WishlistToggle from "@/components/product/WishlistToggle"
 
 async function getProducts(filters: any) {
-  const { category, occasion, bond, minPrice, maxPrice, sort } = filters;
+  const { category, occasion, bond, tag, minPrice, maxPrice, sort } = filters;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   
   const query = new URLSearchParams();
   if (category) query.append("category", category);
   if (occasion) query.append("occasion", occasion);
   if (bond) query.append("bond", bond);
+  if (tag) query.append("tag", tag);
   if (minPrice) query.append("minPrice", minPrice.toString());
   if (maxPrice) query.append("maxPrice", maxPrice.toString());
   if (sort) query.append("sort", sort);
@@ -45,14 +46,23 @@ export default async function ProductsPage({
   const sort = sParams.sort;
 
   // Override / Extend with path segments
+  const TAG_SEGMENTS = ["for-her", "for-him", "gift-sets", "anniversary", "birthday", "wedding", "trending"];
+  let tag = sParams.tag;
+
   if (filter && filter.length > 0) {
     if (filter.length === 1) {
-      // Assume single segment is category: /products/rings
-      category = filter[0];
+      const segment = filter[0].toLowerCase();
+      if (TAG_SEGMENTS.includes(segment)) {
+        tag = segment;
+      } else {
+        // Assume single segment is category: /products/rings
+        category = segment;
+      }
     } else if (filter.length === 2) {
       const [type, slug] = filter;
       if (type === "occasion") occasion = slug;
       if (type === "bond") bond = slug;
+      if (type === "tag") tag = slug;
       if (type === "price") {
         if (slug === "under-1999") maxPrice = 1999;
         else if (slug === "2000-4999") { minPrice = 2000; maxPrice = 4999; }
@@ -62,13 +72,19 @@ export default async function ProductsPage({
     }
   }
 
-  const products = await getProducts({ category, occasion, bond, minPrice, maxPrice, sort })
+  const products = await getProducts({ category, occasion, bond, tag, minPrice, maxPrice, sort })
 
   // Derive Display Title
   let displayTitle = "All Jewelry";
   if (category) displayTitle = `${category.charAt(0).toUpperCase() + category.slice(1)} Collection`;
   if (occasion) displayTitle = `${occasion.charAt(0).toUpperCase() + occasion.slice(1)} Collection`;
   if (bond) displayTitle = `Gifts for ${bond.replace("-", " ")}`;
+  if (tag) {
+    if (tag === "for-her") displayTitle = "Gifts for Her";
+    else if (tag === "for-him") displayTitle = "Gifts for Him";
+    else if (tag === "gift-sets") displayTitle = "Exclusive Gift Sets";
+    else displayTitle = `${tag.replace("-", " ").charAt(0).toUpperCase() + tag.replace("-", " ").slice(1)} Collection`;
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-12">
