@@ -40,6 +40,12 @@ export const buttonStyles = {
     transition-all duration-300
     hover:bg-secondary hover:text-white hover:-translate-y-1 active:scale-95
   `,
+   outlinewhite: `
+    px-6 py-3 rounded-xl font-medium text-white
+    border-2 border-white
+    transition-all duration-300
+    hover:bg-slate-100 hover:text-secondary hover:-translate-y-1 active:scale-95
+  `,
 
   soft: `
     px-6 py-3 rounded-xl font-medium text-secondary

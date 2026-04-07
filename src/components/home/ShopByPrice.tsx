@@ -5,15 +5,15 @@ import Link from "next/link";
 import { IndianRupee, Sparkles, ChevronRight } from "lucide-react";
 
 const priceRanges = [
-  { name: "Under ₹1,999", slug: "under-1999", priceMax: 1999, color: "bg-blue-50 text-blue-500" },
-  { name: "₹2,000 - ₹4,999", slug: "2000-4999", priceMin: 2000, priceMax: 4999, color: "bg-green-50 text-green-500" },
-  { name: "₹5,000 - ₹9,999", slug: "5000-9999", priceMin: 5000, priceMax: 9999, color: "bg-purple-50 text-purple-500" },
-  { name: "Luxury (₹10,000+)", slug: "luxury", priceMin: 10000, color: "bg-orange-50 text-orange-500" },
+  { name: "Under ₹1,999", slug: "under-1999", priceMax: 1999, color: "bg-secondary text-white" },
+  { name: "₹2,000 - ₹4,999", slug: "2000-4999", priceMin: 2000, priceMax: 4999, color: "bg-secondary text-white" },
+  { name: "₹5,000 - ₹9,999", slug: "5000-9999", priceMin: 5000, priceMax: 9999, color: "bg-secondary text-white" },
+  { name: "Luxury (₹10,000+)", slug: "luxury", priceMin: 10000, color: "bg-secondary text-white" },
 ];
 
 export default function ShopByPrice() {
   return (
-    <section className="max-w-7xl mx-auto px-6 md:px-8 w-full py-12 md:py-24 overflow-hidden relative">
+    <section className="max-w-7xl mx-auto px-6 md:px-8 w-full py-12 md:py-12 overflow-hidden relative">
       <div className="flex flex-col items-center mb-12 group">
         <h2 className="text-3xl font-bold text-secondary mb-2 uppercase tracking-tight">Shop by Price</h2>
         <div className="h-1 w-20 bg-primary rounded-full group-hover:w-40 transition-all duration-500" />

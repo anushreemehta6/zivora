@@ -43,7 +43,7 @@ const HomePage = () => {
   return (
     <div className="overflow-x-hidden bg-white">
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] w-full flex items-center px-6 md:px-20 pt-12 pb-12">
+      <section className="relative min-h-[85vh] w-full flex items-center px-6 md:px-20 pt-8 pb-12">
         <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center gap-12 md:gap-20">
           <div className="flex-1 space-y-8 animate-in fade-in slide-in-from-left duration-1000">
             <h1 className="text-6xl md:text-8xl font-playfair font-bold text-secondary tracking-tighter leading-[0.95]">
@@ -135,7 +135,7 @@ const HomePage = () => {
               <ShieldCheck className="w-10 h-10 text-primary" />
             </div>
             <div>
-              <h4 className="font-bold text-xl mb-2 lowercase tracking-tight italic">authentic 925</h4>
+              <h4 className="font-bold text-xl mb-2 tracking-tight">Authentic 925</h4>
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">bis hallmarked jewelry</p>
             </div>
           </div>
@@ -144,7 +144,7 @@ const HomePage = () => {
               <Truck className="w-10 h-10 text-primary" />
             </div>
             <div>
-              <h4 className="font-bold text-xl mb-2 lowercase tracking-tight italic">insured delivery</h4>
+              <h4 className="font-bold text-xl mb-2  tracking-tight">Insured delivery</h4>
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">safe & secure shipping</p>
             </div>
           </div>
@@ -153,7 +153,7 @@ const HomePage = () => {
               <RefreshCcw className="w-10 h-10 text-primary" />
             </div>
             <div>
-              <h4 className="font-bold text-xl mb-2 lowercase tracking-tight italic">15 day return</h4>
+              <h4 className="font-bold text-xl mb-2 tracking-tight">15 day return</h4>
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">hassle-free exchanges</p>
             </div>
           </div>
@@ -162,7 +162,7 @@ const HomePage = () => {
               <Star className="w-10 h-10 text-primary" />
             </div>
             <div>
-              <h4 className="font-bold text-xl mb-2 lowercase tracking-tight italic">lifetime care</h4>
+              <h4 className="font-bold text-xl mb-2 tracking-tight">Lifetime care</h4>
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">cleaning & restoration</p>
             </div>
           </div>

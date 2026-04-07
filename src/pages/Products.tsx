@@ -10,8 +10,8 @@ async function getProducts() {
   )
 
   if (!res.ok) throw new Error("Failed to fetch products")
-
-  return res.json()
+  const data = await res.json();
+  return data.slice(0,8);
 }
 
 export default async function Products() {
@@ -65,7 +65,7 @@ export default async function Products() {
 
               {/* Quick Add Overlay */}
               <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                <button className="w-full bg-secondary text-white py-3 rounded-xl font-bold text-sm shadow-xl flex items-center justify-center gap-2 hover:bg-black transition-colors">
+                <button className="w-full bg-secondary text-white hover:bg-primary py-3 rounded-xl font-bold text-sm shadow-xl flex items-center justify-center gap-2 hover:bg-black transition-colors">
                   <ShoppingBag size={18} />
                   Add to Cart
                 </button>
