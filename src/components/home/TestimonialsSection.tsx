@@ -40,9 +40,7 @@ export default function TestimonialsSection() {
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-secondary uppercase tracking-tight">Voices of <span className="text-primary">Elegance</span></h2>
         </div>
-        <Link href="/testimonials" className="text-sm font-bold text-gray-400 hover:text-primary transition-colors flex items-center gap-2 uppercase tracking-widest border-b border-gray-100 pb-1">
-          Read All Reviews <ArrowRight className="w-4 h-4" />
-        </Link>
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
