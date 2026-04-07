@@ -5,7 +5,7 @@ import { Filter, ChevronDown, ShoppingBag, Star } from "lucide-react"
 import WishlistToggle from "@/components/product/WishlistToggle"
 
 async function getProducts(filters: any) {
-  const { category, occasion, bond, tag, minPrice, maxPrice, sort } = filters;
+  const { category, occasion, bond, tag, minPrice, maxPrice, sort, search } = filters;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   
   const query = new URLSearchParams();
@@ -16,6 +16,7 @@ async function getProducts(filters: any) {
   if (minPrice) query.append("minPrice", minPrice.toString());
   if (maxPrice) query.append("maxPrice", maxPrice.toString());
   if (sort) query.append("sort", sort);
+  if (search) query.append("search", search);
 
   const res = await fetch(
     `${baseUrl}/api/products?${query.toString()}`,
@@ -72,7 +73,7 @@ export default async function ProductsPage({
     }
   }
 
-  const products = await getProducts({ category, occasion, bond, tag, minPrice, maxPrice, sort })
+  const products = await getProducts({ category, occasion, bond, tag, minPrice, maxPrice, sort, search: sParams.search })
 
   // Derive Display Title
   let displayTitle = "All Jewelry";
@@ -85,6 +86,7 @@ export default async function ProductsPage({
     else if (tag === "gift-sets") displayTitle = "Exclusive Gift Sets";
     else displayTitle = `${tag.replace("-", " ").charAt(0).toUpperCase() + tag.replace("-", " ").slice(1)} Collection`;
   }
+  if (sParams.search) displayTitle = `Results for "${sParams.search}"`;
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-12">

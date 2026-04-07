@@ -7,11 +7,11 @@ const Footer = () => {
     <footer className="bg-secondary text-white pt-24 pb-12 px-8 md:px-20 border-t border-white/5 relative overflow-hidden">
       {/* Decorative Blur */}
       <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -z-10" />
-      
+
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20 text-slate-400">
         <div className="flex flex-col space-y-8">
           <Link href="/">
-            <h1 className="logo-gradient text-4xl font-bold tracking-tighter">Zivora</h1>
+            <h1 className="text-white text-4xl font-bold tracking-tighter">Zivora</h1>
             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-1">Fine Silver Jewelry</p>
           </Link>
           <p className="text-sm leading-relaxed max-w-xs font-medium">
@@ -33,20 +33,20 @@ const Footer = () => {
         <div className="flex flex-col space-y-6">
           <h3 className="text-lg text-white font-bold  underline decoration-primary underline-offset-8">Quick Links</h3>
           <ul className="space-y-4 text-sm font-bold uppercase tracking-widest">
-            <li><Link href="/products" className="hover:text-primary transition-colors">Collection</Link></li>
-            <li><Link href="/wishlist" className="hover:text-primary transition-colors">Wishlist</Link></li>
-            <li><Link href="/about" className="hover:text-primary transition-colors">Our Story</Link></li>
-            <li><Link href="/contact" className="hover:text-primary transition-colors">Customer Care</Link></li>
+            <li><Link href="/products" className="hover:text-white transition-colors cursor-pointer">Collection</Link></li>
+            <li><Link href="/wishlist" className="hover:text-white transition-colors cursor-pointer">Wishlist</Link></li>
+            <li><Link href="/about" className="hover:text-white transition-colors cursor-pointer">Our Story</Link></li>
+            <li><Link href="/contact" className="hover:text-white transition-colors cursor-pointer">Customer Care</Link></li>
           </ul>
         </div>
 
         <div className="flex flex-col space-y-6">
           <h3 className="text-lg text-white font-bold underline decoration-primary underline-offset-8">Information</h3>
           <ul className="space-y-4 text-sm font-bold uppercase tracking-widest">
-            <li><Link href="/shipping-returns" className="hover:text-primary transition-colors">Shipping & Returns</Link></li>
-            <li><Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-            <li><Link href="/faq" className="hover:text-primary transition-colors">FAQs</Link></li>
-            <li><Link href="/size-guide" className="hover:text-primary transition-colors">Size Guide</Link></li>
+            <li><Link href="/shipping-returns" className="hover:text-white transition-colors cursor-pointer">Shipping & Returns</Link></li>
+            <li><Link href="/privacy-policy" className="hover:text-white transition-colors cursor-pointer">Privacy Policy</Link></li>
+            <li><Link href="/faq" className="hover:text-white transition-colors cursor-pointer">FAQs</Link></li>
+            {/* <li><Link href="/size-guide" className="hover:text-white transition-colors cursor-pointer">Size Guide</Link></li> */}
           </ul>
         </div>
 
@@ -65,14 +65,14 @@ const Footer = () => {
             </div>
             <div className="flex items-center gap-4">
               <Mail size={18} className="text-primary flex-shrink-0" />
-              <p className="text-sm font-bold tracking-wider hover:text-white transition-colors cursor-pointer">concierge@zivora.co</p>
+              <p className="text-sm font-bold tracking-wider hover:text-white transition-colors cursor-pointer">zivora2026@gmail.com</p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] font-bold text-gray-500 uppercase tracking-[0.25em]">
-        <p>&copy; 2024 Zivora Fine Jewelry. All Rights Reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Zivora Fine Jewelry. All Rights Reserved.</p>
         <p>Designed and Developed By Anushree Mehta</p>
       </div>
     </footer>
