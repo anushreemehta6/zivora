@@ -5,6 +5,12 @@ export const buttonStyles = {
     bg-primary hover:bg-secondary
     
   `,
+   newprimary: `
+    px-6 py-3 rounded-xl font-medium text-white
+    shadow-md transition-all duration-300
+    bg-secondary hover:bg-primary
+    
+  `,
 
   gold: `
     px-6 py-3 rounded-xl font-medium text-white

@@ -1,5 +1,8 @@
 import bg from "./bg-landing.png";
 import heroComposition from "./hero-composition.png";
+import heroDarkBlue from "./hero-dark-blue.png";
+import heroFreshLuxury from "./hero-fresh-luxury.png";
+import heroModelLuxury from "./hero-model-luxury.png";
 import rings from "./category_rings.png";
 import earrings from "./category_earrings.png";
 import necklaces from "./category_necklaces.png";
@@ -31,6 +34,9 @@ import catNosepins from "./cat_nosepins.png";
 export {
     bg,
     heroComposition,
+    heroDarkBlue,
+    heroFreshLuxury,
+    heroModelLuxury,
     rings,
     earrings,
     necklaces,
