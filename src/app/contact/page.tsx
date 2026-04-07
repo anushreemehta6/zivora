@@ -43,14 +43,14 @@ export default function ContactPage() {
   return (
     <div className="flex flex-col gap-24 pb-24">
       {/* Hero */}
-      <section className="relative h-[50vh] w-full overflow-hidden flex items-center justify-center">
+      <section className="pt-8 relative h-[30vh] w-full overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 mesh-gradient opacity-30 -z-10" />
         <div className="relative text-center space-y-6 max-w-3xl px-8">
           <h1 className="text-5xl md:text-7xl font-bold text-secondary  tracking-tighter">
             Get in <span className="text-primary underline decoration-primary/30 underline-offset-8">Touch</span>
           </h1>
           <p className="text-lg text-gray-500 leading-relaxed font-medium">
-            Our concierge team is here to assist you with everything from product inquiries to custom design requests.
+            Our team is here to assist you with everything from product inquiries to custom design requests.
           </p>
         </div>
       </section>
@@ -81,7 +81,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Email</p>
-                <p className="text-lg font-bold text-secondary ">concierge@zivora.co</p>
+                <p className="text-lg font-bold text-secondary ">zivora2026@gmail.com</p>
                 <p className="text-xs text-gray-400 font-medium">Average response time: 4 hours</p>
               </div>
             </div>
@@ -91,7 +91,7 @@ export default function ContactPage() {
                 <MapPin size={24} />
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Visit Salon</p>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Visit Store</p>
                 <p className="text-lg font-bold text-secondary  max-w-sm">
                   D-35 Shanti Nagar, Jaipur, Rajasthan 302006
                 </p>
@@ -99,20 +99,7 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <div className="pt-12 border-t border-gray-100 grid grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-primary font-bold text-sm ">
-                <Clock size={16} /> Opening Hours
-              </div>
-              <p className="text-xs text-gray-400 font-medium leading-relaxed">Mon - Sat: 10:00 - 18:30 <br /> Sun: By Appointment</p>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-primary font-bold text-sm ">
-                <Globe size={16} /> Global Shipping
-              </div>
-              <p className="text-xs text-gray-400 font-medium leading-relaxed">We deliver to over 50 countries worldwide.</p>
-            </div>
-          </div>
+
         </div>
 
         {/* Form */}
@@ -128,23 +115,23 @@ export default function ContactPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Your Name</label>
-                <input 
-                  type="text" 
-                  value={form.name} 
-                  onChange={(e) => setForm({...form, name: e.target.value})}
-                  className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm font-bold focus:bg-white focus:border-primary/20 transition-all outline-none" 
-                  placeholder="John Doe" 
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm font-bold focus:bg-white focus:border-primary/20 transition-all outline-none"
+                  placeholder="John Doe"
                   required
                 />
               </div>
               <div className="space-y-3">
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Email Address</label>
-                <input 
-                  type="email" 
-                  value={form.email} 
-                  onChange={(e) => setForm({...form, email: e.target.value})}
-                  className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm font-bold focus:bg-white focus:border-primary/20 transition-all outline-none" 
-                  placeholder="john@example.com" 
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm font-bold focus:bg-white focus:border-primary/20 transition-all outline-none"
+                  placeholder="john@example.com"
                   required
                 />
               </div>
@@ -152,36 +139,37 @@ export default function ContactPage() {
 
             <div className="space-y-3">
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Subject</label>
-              <input 
-                type="text" 
-                value={form.subject} 
-                onChange={(e) => setForm({...form, subject: e.target.value})}
-                className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm font-bold focus:bg-white focus:border-primary/20 transition-all outline-none" 
-                placeholder="Product Inquiry / Custom Request" 
+              <input
+                type="text"
+                value={form.subject}
+                onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm font-bold focus:bg-white focus:border-primary/20 transition-all outline-none"
+                placeholder="Product Inquiry / Custom Request"
                 required
               />
             </div>
 
             <div className="space-y-3">
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Message</label>
-              <textarea 
-                value={form.message} 
-                onChange={(e) => setForm({...form, message: e.target.value})}
+              <textarea
+                value={form.message}
+                onChange={(e) => setForm({ ...form, message: e.target.value })}
                 rows={6}
-                className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm font-bold focus:bg-white focus:border-primary/20 transition-all outline-none resize-none" 
-                placeholder="Tell us more about your inquiry..." 
+                className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm font-bold focus:bg-white focus:border-primary/20 transition-all outline-none resize-none"
+                placeholder="Tell us more about your inquiry..."
                 required
               />
             </div>
 
-            <Button 
-              type="submit" 
-              variant="gold" 
+            <Button
+              type="submit"
+              variant="primary"
               disabled={loading}
-              className="w-full py-5 text-sm font-bold uppercase tracking-widest group shadow-2xl shadow-primary/20 disabled:opacity-50"
+              className="w-full py-5 text-sm font-bold uppercase tracking-widest group shadow-2xl shadow-primary/20 disabled:opacity-50 flex justify-center items-center gap-4"
             >
+              {!loading && <Send size={16} className="" />}
               {loading ? "Sending..." : "Send Message"}
-              {!loading && <Send size={16} className="ml-3 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}
+
             </Button>
           </form>
         </div>

@@ -2,8 +2,8 @@ export const buttonStyles = {
   primary: `
     px-6 py-3 rounded-xl font-medium text-white
     shadow-md transition-all duration-300
-    bg-secondary hover:bg-slate-800
-    hover:-translate-y-1 active:scale-95
+    bg-primary hover:bg-secondary
+    
   `,
 
   gold: `
@@ -42,4 +42,4 @@ export const buttonStyles = {
     hover:bg-white hover:-translate-y-1 active:scale-95
   `,
 };
-
+
