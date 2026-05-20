@@ -2,21 +2,26 @@ import { prisma } from './lib/prisma';
 
 async function main() {
   try {
-    const products = await prisma.product.findMany({
-      include: { category: true, images: true },
-      take: 5
-    });
-    console.log('--- PRODUCTS ---');
-    console.log(JSON.stringify(products, null, 2));
-
+    console.log('=== DB METAL RATES & PRODUCTS INSPECTION ===');
+    
     const metalRates = await prisma.metalRate.findMany();
-    console.log('--- METAL RATES ---');
+    console.log('\n--- Metal Rates in DB ---');
     console.log(JSON.stringify(metalRates, null, 2));
+    
+    const products = await prisma.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        purity: true,
+        weight: true
+      }
+    });
+    console.log('\n--- Products in DB ---');
+    console.log(JSON.stringify(products, null, 2));
+    
   } catch (err: any) {
-    console.error('--- DEBUG ERROR ---');
-    console.error(err.message || err);
-    if (err.code) console.error('Error Code:', err.code);
-    if (err.meta) console.error('Error Meta:', JSON.stringify(err.meta));
+    console.error('Error:', err);
   } finally {
     await prisma.$disconnect();
   }

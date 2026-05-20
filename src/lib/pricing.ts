@@ -1,7 +1,7 @@
 import { prisma } from "./prisma"
 
 export async function calculateProductPrice(product: any) {
-  const metalRate = await prisma.metalRate.findUnique({
+  let metalRate = await prisma.metalRate.findUnique({
     where: {
       metal_purity: {
         metal: product.type,
@@ -10,7 +10,30 @@ export async function calculateProductPrice(product: any) {
     }
   })
 
-  if (!metalRate) throw new Error("Metal rate not found")
+  // Case-insensitivity fallback (e.g. product "SILVER" vs database "silver")
+  if (!metalRate) {
+    metalRate = await prisma.metalRate.findUnique({
+      where: {
+        metal_purity: {
+          metal: product.type.toLowerCase(),
+          purity: product.purity || ""
+        }
+      }
+    })
+  }
+
+  if (!metalRate) {
+    metalRate = await prisma.metalRate.findUnique({
+      where: {
+        metal_purity: {
+          metal: product.type.toUpperCase(),
+          purity: product.purity || ""
+        }
+      }
+    })
+  }
+
+  if (!metalRate) throw new Error(`Metal rate not found for metal type: ${product.type} with purity: ${product.purity || "none"}`)
 
   const weight = product.weight ?? 0
   const makingCharges = product.makingCharges ?? 0

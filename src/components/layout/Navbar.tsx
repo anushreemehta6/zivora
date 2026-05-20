@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import React, { useState } from "react";
-import { Heart, Menu, Search, ShoppingBag, User, X, ChevronDown, ChevronRight, Sparkles, LogOut } from "lucide-react";
+import { Heart, Menu, Search, ShoppingBag, User, X, ChevronDown, ChevronRight, Sparkles, LogOut, Settings, Package, LogIn, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
@@ -12,6 +12,7 @@ import CartDrawer from "../cart/CartDrawer";
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
   const { data: session } = useSession();
@@ -113,19 +114,169 @@ const Navbar = () => {
             </Link>
 
 
-            {session ? (
+            <div className="relative">
               <button
-                onClick={() => signOut()}
-                className="p-1.5 md:p-2 text-secondary hover:text-primary transition-colors"
-                title="Profile & Settings"
+                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                className={`w-10 h-10 rounded-full transition-all flex items-center justify-center text-sm font-bold select-none cursor-pointer focus:outline-none ${
+                  session
+                    ? "bg-primary/10 border-2 border-primary/20 hover:border-primary text-primary"
+                    : "bg-gray-50 border-2 border-gray-100 hover:border-primary/45 hover:bg-primary/5 text-secondary"
+                }`}
+                title={session ? "My Profile" : "Guest Menu / Sign In"}
               >
-                <User size={20} className="md:w-5 md:h-5" />
+                {session ? (
+                  session.user?.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || "Avatar"}
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    session.user?.name?.[0]?.toUpperCase() || <User size={16} />
+                  )
+                ) : (
+                  <User size={16} className="text-gray-500" />
+                )}
               </button>
-            ) : (
-              <Link href="/login" className="p-1.5 md:p-2 text-secondary hover:text-primary transition-colors">
-                <LogOut size={20} className="md:w-5 md:h-5" />
-              </Link>
-            )}
+
+              {/* Dropdown Card */}
+              {isProfileDropdownOpen && (
+                <>
+                  {/* Invisible Backdrop to close dropdown on click outside */}
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setIsProfileDropdownOpen(false)}
+                  />
+                  
+                  <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 space-y-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    {session ? (
+                      <>
+                        {/* User Header */}
+                        <div className="border-b border-gray-100 pb-4">
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-2">Logged in as</p>
+                          <h4 className="font-bold text-secondary text-sm truncate leading-tight mb-0.5">{session.user?.name}</h4>
+                          <p className="text-xs text-gray-400 truncate leading-none">{session.user?.email}</p>
+                        </div>
+
+                        {/* Dropdown Options */}
+                        <div className="flex flex-col gap-1.5 text-sm font-semibold text-secondary">
+                          <Link 
+                            href="/profile/orders" 
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/5 hover:text-primary transition-all"
+                          >
+                            <User size={16} className="text-gray-400" />
+                            <span>My Profile</span>
+                          </Link>
+                          <Link 
+                            href="/profile/orders" 
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/5 hover:text-primary transition-all"
+                          >
+                            <Package size={16} className="text-gray-400" />
+                            <span>My Orders</span>
+                          </Link>
+                          <Link 
+                            href="/wishlist" 
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/5 hover:text-primary transition-all"
+                          >
+                            <Heart size={16} className="text-gray-400" />
+                            <span>My Wishlist</span>
+                          </Link>
+                          <Link 
+                            href="/profile/settings" 
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/5 hover:text-primary transition-all"
+                          >
+                            <Settings size={16} className="text-gray-400" />
+                            <span>Settings</span>
+                          </Link>
+                          {session.user?.role === "ADMIN" && (
+                            <Link 
+                              href="/admin" 
+                              onClick={() => setIsProfileDropdownOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/5 hover:text-primary transition-all text-primary font-bold"
+                            >
+                              <Sparkles size={16} />
+                              <span>Admin Panel</span>
+                            </Link>
+                          )}
+                        </div>
+
+                        {/* Sign Out Button */}
+                        <div className="border-t border-gray-100 pt-3">
+                          <button
+                            onClick={() => {
+                              setIsProfileDropdownOpen(false);
+                              signOut({ callbackUrl: "/" });
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-500 hover:bg-red-50/50 transition-all text-sm font-semibold text-left"
+                          >
+                            <LogOut size={16} />
+                            <span>Sign Out</span>
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {/* Guest Header */}
+                        <div className="border-b border-gray-100 pb-4">
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-2">Welcome to Zivora</p>
+                          <h4 className="font-bold text-secondary text-sm leading-tight mb-0.5">Guest Profile</h4>
+                          <p className="text-xs text-gray-400 leading-none">Login to track orders and save favorites</p>
+                        </div>
+
+                        {/* Dropdown Options */}
+                        <div className="flex flex-col gap-1.5 text-sm font-semibold text-secondary">
+                          <Link 
+                            href="/login" 
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/5 hover:text-primary transition-all text-primary font-bold animate-pulse"
+                          >
+                            <LogIn size={16} />
+                            <span>Sign In</span>
+                          </Link>
+                          <Link 
+                            href="/register" 
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/5 hover:text-primary transition-all"
+                          >
+                            <UserPlus size={16} className="text-gray-400" />
+                            <span>Create Account</span>
+                          </Link>
+                          
+                          <div className="h-px bg-gray-100 my-1" />
+                          
+                          <Link 
+                            href="/login?callbackUrl=/profile/orders" 
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                            className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-primary/5 hover:text-primary transition-all group/opt"
+                          >
+                            <div className="flex items-center gap-3">
+                              <User size={16} className="text-gray-400 group-hover/opt:text-primary transition-colors" />
+                              <span className="text-gray-400 group-hover/opt:text-secondary transition-colors">My Profile</span>
+                            </div>
+                            <span className="text-[10px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider group-hover/opt:bg-primary/10 group-hover/opt:text-primary transition-colors">Lock</span>
+                          </Link>
+                          <Link 
+                            href="/login?callbackUrl=/profile/orders" 
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                            className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-primary/5 hover:text-primary transition-all group/opt"
+                          >
+                            <div className="flex items-center gap-3">
+                              <Package size={16} className="text-gray-400 group-hover/opt:text-primary transition-colors" />
+                              <span className="text-gray-400 group-hover/opt:text-secondary transition-colors">My Orders</span>
+                            </div>
+                            <span className="text-[10px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider group-hover/opt:bg-primary/10 group-hover/opt:text-primary transition-colors">Lock</span>
+                          </Link>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
 
             <button
               onClick={() => setIsCartOpen(true)}
@@ -187,14 +338,88 @@ const Navbar = () => {
         </div>
 
 
-        <div className="mt-auto pt-8 border-t border-gray-100">
-          <Link
-            href="/login"
-            className="flex items-center gap-2 text-secondary font-bold"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            <User size={20} /> Login / Register
-          </Link>
+        <div className="mt-auto pt-8 border-t border-gray-100 space-y-4">
+          {session ? (
+            <div className="space-y-4 animate-in fade-in duration-500">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold flex-shrink-0 overflow-hidden border border-primary/20">
+                  {session.user?.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || "Avatar"}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    session.user?.name?.[0]?.toUpperCase() || <User size={16} />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-bold text-secondary text-sm truncate leading-tight">{session.user?.name}</h4>
+                  <p className="text-xs text-gray-400 truncate leading-none mt-1">{session.user?.email}</p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-3 font-semibold text-sm">
+                <Link
+                  href="/profile/orders"
+                  className="flex items-center gap-2 text-secondary hover:text-primary transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <User size={18} className="text-gray-400" /> My Profile
+                </Link>
+                <Link
+                  href="/profile/orders"
+                  className="flex items-center gap-2 text-secondary hover:text-primary transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Package size={18} className="text-gray-400" /> My Orders
+                </Link>
+                <Link
+                  href="/wishlist"
+                  className="flex items-center gap-2 text-secondary hover:text-primary transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Heart size={18} className="text-gray-400" /> My Wishlist
+                </Link>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    signOut({ callbackUrl: "/" });
+                  }}
+                  className="flex items-center gap-2 text-red-500 font-bold text-left"
+                >
+                  <LogOut size={18} /> Log Out
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4 animate-in fade-in duration-500">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400 flex-shrink-0">
+                  <User size={18} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-bold text-secondary text-sm leading-tight">Guest Profile</h4>
+                  <p className="text-xs text-gray-400 leading-none mt-1">Unlock luxury access</p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-3 font-semibold text-sm">
+                <Link
+                  href="/login"
+                  className="flex items-center gap-2 text-primary font-bold hover:text-primary transition-colors animate-pulse"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <LogIn size={18} /> Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="flex items-center gap-2 text-secondary hover:text-primary transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <UserPlus size={18} /> Create Account
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

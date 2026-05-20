@@ -1,17 +1,238 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
-import { ShieldCheck, Truck, CreditCard, ChevronLeft, MapPin, CheckCircle2, Gift } from "lucide-react";
+import { ShieldCheck, Truck, CreditCard, ChevronLeft, MapPin, CheckCircle2, Gift, Tag, Loader2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 
+const INDIAN_STATES = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Lakshadweep",
+  "Puducherry"
+];
+
 export default function CheckoutPage() {
-  const { cart, cartTotal } = useCart();
+  const { cart, cartTotal, clearCart } = useCart();
   const [step, setStep] = useState(1); // 1: Shipping, 2: Payment, 3: Success
   const [giftWrap, setGiftWrap] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
+
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [availableCoupons, setAvailableCoupons] = useState<any[]>([]);
+
+  // Shipping form state
+  const [shippingForm, setShippingForm] = useState({
+    fullName: "",
+    phone: "",
+    line1: "",
+    line2: "",
+    city: "",
+    state: "Maharashtra",
+    postalCode: "",
+    country: "India",
+  });
+
+  // Order placement state
+  const [paymentMethod, setPaymentMethod] = useState("RAZORPAY"); // RAZORPAY or COD
+  const [orderId, setOrderId] = useState("");
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const [orderError, setOrderError] = useState("");
+
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const response = await fetch("/api/coupons");
+        if (response.ok) {
+          const data = await response.json();
+          // Filter coupons that are active and not expired
+          const activeCoupons = data.filter((c: any) => {
+            const isAct = c.isActive;
+            const isNotExpired = !c.expiryDate || new Date(c.expiryDate) > new Date();
+            return isAct && isNotExpired;
+          });
+          setAvailableCoupons(activeCoupons);
+        }
+      } catch (err) {
+        console.error("Failed to fetch available coupons", err);
+      }
+    };
+    fetchCoupons();
+  }, []);
+
+  const handleApplyCoupon = async (e?: React.FormEvent, directCode?: string) => {
+    if (e) e.preventDefault();
+    const targetCode = directCode || couponCode;
+    if (!targetCode.trim()) return;
+
+    setCouponLoading(true);
+    setCouponError("");
+
+    try {
+      const response = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          code: targetCode.trim().toUpperCase(),
+          cartTotal: cartTotal,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setCouponError(data.error || "Invalid coupon code");
+        setAppliedCoupon(null);
+      } else {
+        setAppliedCoupon({
+          code: targetCode.trim().toUpperCase(),
+          discountAmount: data.discountAmount,
+        });
+        setCouponError("");
+        setCouponCode(targetCode.trim().toUpperCase()); // sync input
+      }
+    } catch (err) {
+      setCouponError("Failed to validate coupon. Please try again.");
+      setAppliedCoupon(null);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+  };
+
+  const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
+  const subtotal = cartTotal;
+  const giftWrapAmount = giftWrap ? 50 : 0;
+  const taxableAmount = Math.max(0, subtotal - discountAmount + giftWrapAmount);
+  const gstAmount = taxableAmount * 0.03;
+  const grandTotal = taxableAmount + gstAmount;
+
+  // Automatically adjust payment method if COD becomes unavailable
+  useEffect(() => {
+    if (grandTotal >= 10000 && paymentMethod === "COD") {
+      setPaymentMethod("RAZORPAY");
+    }
+  }, [grandTotal, paymentMethod]);
+
+  const handlePlaceOrder = async () => {
+    const phoneRegex = /^(?:\+91|0)?[6-9]\d{9}$/;
+    const pinRegex = /^[1-9][0-9]{5}$/;
+
+    if (!shippingForm.fullName.trim() || !shippingForm.phone.trim() || !shippingForm.line1.trim() || !shippingForm.city.trim() || !shippingForm.postalCode.trim() || !shippingForm.state) {
+      setOrderError("Please complete all shipping address fields before placing the order.");
+      setStep(1); // send back to shipping to correct
+      return;
+    }
+
+    if (!phoneRegex.test(shippingForm.phone.replace(/[\s-]/g, ""))) {
+      setOrderError("Please enter a valid 10-digit Indian phone number.");
+      setStep(1);
+      return;
+    }
+
+    if (!pinRegex.test(shippingForm.postalCode.trim())) {
+      setOrderError("Please enter a valid 6-digit Indian PIN code (postal code).");
+      setStep(1);
+      return;
+    }
+
+    if (!INDIAN_STATES.includes(shippingForm.state)) {
+      setOrderError("Please select a valid Indian State/Union Territory.");
+      setStep(1);
+      return;
+    }
+
+    setPlacingOrder(true);
+    setOrderError("");
+
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          address: {
+            fullName: shippingForm.fullName,
+            phone: shippingForm.phone,
+            line1: shippingForm.line1,
+            line2: shippingForm.line2,
+            city: shippingForm.city,
+            state: shippingForm.state,
+            postalCode: shippingForm.postalCode,
+            country: shippingForm.country,
+          },
+          paymentMethod: paymentMethod, // RAZORPAY or COD
+          discount: discountAmount,
+          giftWrap: giftWrap,
+          items: cart.map(item => ({
+            productId: item.productId,
+            variantId: item.variantId || null,
+            quantity: item.quantity
+          }))
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setOrderError(data.error || "Failed to place your luxury order. Please try again.");
+      } else {
+        setOrderId(data.id || "AN-88492");
+        clearCart();
+        setStep(3); // success
+      }
+    } catch (err) {
+      console.error("Failed to place order:", err);
+      setOrderError("An unexpected error occurred while processing your order. Please try again.");
+    } finally {
+      setPlacingOrder(false);
+    }
+  };
 
   if (cart.length === 0 && step !== 3) {
     return (
@@ -49,35 +270,119 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
         {/* Left Column: Form */}
         <div className="lg:col-span-7">
+          {orderError && (
+            <div className="p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100 text-sm font-semibold mb-6 animate-in fade-in slide-in-from-top-1">
+              {orderError}
+            </div>
+          )}
+
           {step === 1 && (
             <div className="space-y-10 animate-in fade-in slide-in-from-left duration-500">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-secondary ">Shipping Information</h2>
-                <Link href="/" onClick={(e) => { e.preventDefault(); /* go back logic */ }} className="text-sm font-bold text-gray-400 hover:text-primary flex items-center gap-1">
+                <Link href="/" className="text-sm font-bold text-gray-400 hover:text-primary flex items-center gap-1">
                   <ChevronLeft size={16} /> Back
                 </Link>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Full Name</label>
-                  <input type="text" className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" placeholder="John Doe" />
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Full Name *</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={shippingForm.fullName}
+                    onChange={(e) => setShippingForm({ ...shippingForm, fullName: e.target.value })}
+                    className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none text-sm font-semibold text-secondary" 
+                    placeholder="John Doe" 
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Phone Number</label>
-                  <input type="tel" className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" placeholder="+91 98765 43210" />
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Phone Number *</label>
+                  <input 
+                    type="tel" 
+                    required
+                    value={shippingForm.phone}
+                    onChange={(e) => setShippingForm({ ...shippingForm, phone: e.target.value })}
+                    className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none text-sm font-semibold text-secondary" 
+                    placeholder="+91 98765 43210" 
+                  />
                 </div>
                 <div className="md:col-span-2 space-y-2">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Address Line 1</label>
-                  <input type="text" className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" placeholder="Apartment, Street, Area" />
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Address Line 1 *</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={shippingForm.line1}
+                    onChange={(e) => setShippingForm({ ...shippingForm, line1: e.target.value })}
+                    className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none text-sm font-semibold text-secondary" 
+                    placeholder="Apartment, Street, Area" 
+                  />
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Address Line 2 (Optional)</label>
+                  <input 
+                    type="text" 
+                    value={shippingForm.line2}
+                    onChange={(e) => setShippingForm({ ...shippingForm, line2: e.target.value })}
+                    className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none text-sm font-semibold text-secondary" 
+                    placeholder="Landmark, Near by, etc" 
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">City</label>
-                  <input type="text" className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" placeholder="Mumbai" />
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">City *</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={shippingForm.city}
+                    onChange={(e) => setShippingForm({ ...shippingForm, city: e.target.value })}
+                    className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none text-sm font-semibold text-secondary" 
+                    placeholder="Mumbai" 
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Postal Code</label>
-                  <input type="text" className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" placeholder="400001" />
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Postal Code *</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={shippingForm.postalCode}
+                    onChange={(e) => setShippingForm({ ...shippingForm, postalCode: e.target.value })}
+                    className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none text-sm font-semibold text-secondary" 
+                    placeholder="400001" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">State *</label>
+                  <div className="relative">
+                    <select
+                      value={shippingForm.state}
+                      onChange={(e) => setShippingForm({ ...shippingForm, state: e.target.value })}
+                      className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none text-sm font-semibold text-secondary appearance-none cursor-pointer"
+                    >
+                      <option value="" disabled>Select State / UT</option>
+                      {INDIAN_STATES.map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Country</label>
+                  <input 
+                    type="text" 
+                    readOnly
+                    disabled
+                    value="India"
+                    className="w-full px-5 py-3 bg-gray-100/50 border border-gray-150 rounded-xl outline-none text-sm font-semibold text-gray-400 cursor-not-allowed select-none" 
+                  />
+                  <p className="text-[10px] text-primary/70 font-semibold italic mt-1">✦ Currently shipping in India only</p>
                 </div>
               </div>
 
@@ -113,7 +418,37 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <Button variant="gold" className="w-full py-5 text-lg font-bold" onClick={() => setStep(2)}>
+              <Button 
+                variant="gold" 
+                className="w-full py-5 text-lg font-bold" 
+                onClick={() => {
+                  const phoneRegex = /^(?:\+91|0)?[6-9]\d{9}$/;
+                  const pinRegex = /^[1-9][0-9]{5}$/;
+
+                  if (!shippingForm.fullName.trim() || !shippingForm.phone.trim() || !shippingForm.line1.trim() || !shippingForm.city.trim() || !shippingForm.postalCode.trim() || !shippingForm.state) {
+                    setOrderError("Please fill out all required fields marked with *");
+                    return;
+                  }
+
+                  if (!phoneRegex.test(shippingForm.phone.replace(/[\s-]/g, ""))) {
+                    setOrderError("Please enter a valid 10-digit Indian phone number.");
+                    return;
+                  }
+
+                  if (!pinRegex.test(shippingForm.postalCode.trim())) {
+                    setOrderError("Please enter a valid 6-digit Indian PIN code (postal code).");
+                    return;
+                  }
+
+                  if (!INDIAN_STATES.includes(shippingForm.state)) {
+                    setOrderError("Please select a valid Indian State/Union Territory from the list.");
+                    return;
+                  }
+
+                  setOrderError("");
+                  setStep(2);
+                }}
+              >
                 Continue to Payment
               </Button>
             </div>
@@ -129,9 +464,17 @@ export default function CheckoutPage() {
               </div>
 
               <div className="space-y-4">
-                <div className="p-6 border-2 border-primary bg-primary/5 rounded-2xl flex items-center justify-between">
+                {/* Pay Online Option */}
+                <div 
+                  onClick={() => setPaymentMethod("RAZORPAY")}
+                  className={`p-6 border-2 rounded-2xl flex items-center justify-between cursor-pointer transition-all ${
+                    paymentMethod === "RAZORPAY" 
+                      ? "border-primary bg-primary/5" 
+                      : "border-gray-100 hover:border-primary/20 hover:bg-gray-50/50"
+                  }`}
+                >
                   <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-full bg-white shadow-sm text-primary">
+                    <div className={`p-3 rounded-full bg-white shadow-sm transition-colors ${paymentMethod === "RAZORPAY" ? "text-primary" : "text-gray-400"}`}>
                       <CreditCard size={24} />
                     </div>
                     <div>
@@ -139,20 +482,40 @@ export default function CheckoutPage() {
                       <p className="text-xs text-gray-500">UPI, Card, NetBanking</p>
                     </div>
                   </div>
-                  <div className="w-6 h-6 rounded-full border-4 border-primary" />
+                  <div className={`w-6 h-6 rounded-full border-4 transition-all ${paymentMethod === "RAZORPAY" ? "border-primary" : "border-gray-200"}`} />
                 </div>
                 
-                <div className="p-6 border border-gray-100 bg-gray-50 rounded-2xl flex items-center justify-between opacity-60">
+                {/* Cash on Delivery Option */}
+                <div 
+                  onClick={() => {
+                    if (grandTotal < 10000) {
+                      setPaymentMethod("COD");
+                    }
+                  }}
+                  className={`p-6 border rounded-2xl flex items-center justify-between transition-all ${
+                    grandTotal >= 10000 
+                      ? "opacity-40 cursor-not-allowed border-gray-100 bg-gray-50/50" 
+                      : "cursor-pointer"
+                  } ${
+                    paymentMethod === "COD"
+                      ? "border-2 border-primary bg-primary/5" 
+                      : "border-gray-100 hover:border-primary/20 hover:bg-gray-50/50"
+                  }`}
+                >
                   <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-full bg-white shadow-sm text-gray-400">
+                    <div className={`p-3 rounded-full bg-white shadow-sm transition-colors ${paymentMethod === "COD" ? "text-primary" : "text-gray-400"}`}>
                       <Truck size={24} />
                     </div>
                     <div>
                       <h4 className="font-bold text-secondary">Cash on Delivery</h4>
-                      <p className="text-xs text-gray-500">Available on orders below ₹10,000</p>
+                      <p className="text-xs text-gray-500">
+                        {grandTotal >= 10000 
+                          ? "Unavailable (Orders must be under ₹10,000)" 
+                          : "Available on orders below ₹10,000"}
+                      </p>
                     </div>
                   </div>
-                  <div className="w-6 h-6 rounded-full border-2 border-gray-200" />
+                  <div className={`w-6 h-6 rounded-full border-2 transition-all ${paymentMethod === "COD" ? "border-4 border-primary" : "border-gray-200"}`} />
                 </div>
               </div>
 
@@ -164,8 +527,20 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <Button variant="gold" className="w-full py-5 text-lg font-bold shadow-2xl shadow-primary/30" onClick={() => setStep(3)}>
-                Complete Payment of ₹{cartTotal.toLocaleString()}
+              <Button 
+                variant="gold" 
+                className="w-full py-5 text-lg font-bold shadow-2xl shadow-primary/30 flex items-center justify-center gap-2" 
+                onClick={handlePlaceOrder}
+                disabled={placingOrder}
+              >
+                {placingOrder ? (
+                  <>
+                    <Loader2 className="animate-spin text-white" size={20} />
+                    <span>Processing Luxury Order...</span>
+                  </>
+                ) : (
+                  <span>Complete Payment of ₹{grandTotal.toLocaleString()}</span>
+                )}
               </Button>
             </div>
           )}
@@ -181,7 +556,9 @@ export default function CheckoutPage() {
               
               <div>
                 <h2 className="text-4xl font-bold text-secondary mb-2 ">Order Placed Successfully!</h2>
-                <p className="text-gray-500 max-w-md mx-auto">Thank you for shopping with <span className="logo text-primary">Zivora</span>. Your order #AN-88492 is being prepared for shipment.</p>
+                <p className="text-gray-500 max-w-md mx-auto">
+                  Thank you for shopping with <span className="logo text-primary">Zivora</span>. Your order <span className="font-mono font-bold text-secondary">#{orderId}</span> is being prepared for shipment.
+                </p>
               </div>
 
               <div className="bg-gray-50 rounded-3xl p-8 border border-gray-100 w-full max-w-md">
@@ -228,18 +605,122 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
+              {/* Coupon Code Section */}
+              <div className="py-6 border-t border-gray-100">
+                {!appliedCoupon ? (
+                  <div className="space-y-4">
+                    {availableCoupons.length > 0 && (
+                      <div className="space-y-1.5 animate-in fade-in duration-300">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">
+                          Available Offers
+                        </label>
+                        <div className="relative">
+                          <select
+                            onChange={(e) => {
+                              const code = e.target.value;
+                              if (code) {
+                                handleApplyCoupon(undefined, code);
+                              }
+                            }}
+                            defaultValue=""
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none text-sm font-semibold text-secondary appearance-none cursor-pointer"
+                          >
+                            <option value="" disabled>Select a special offer...</option>
+                            {availableCoupons.map((c) => (
+                              <option key={c.id} value={c.code}>
+                                {c.code} - {c.discountType === "percentage" ? `${c.discount}% Off` : `₹${c.discount} Off`}{c.minAmount ? ` (Min: ₹${c.minAmount.toLocaleString()})` : ""}
+                              </option>
+                            ))}
+                          </select>
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <form onSubmit={(e) => handleApplyCoupon(e)} className="space-y-3">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">
+                        Or Enter Coupon Manually
+                      </label>
+                      <div className="flex gap-2">
+                        <div className="relative flex-grow">
+                          <Tag className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                          <input
+                            type="text"
+                            placeholder="ENTER COUPON CODE"
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none text-sm uppercase tracking-wider font-semibold placeholder:text-gray-300 placeholder:normal-case placeholder:tracking-normal font-sans"
+                          />
+                        </div>
+                        <Button
+                          type="submit"
+                          variant="dark"
+                          disabled={couponLoading || !couponCode.trim()}
+                          className="px-6 py-3 text-sm font-bold rounded-xl flex items-center justify-center min-w-[90px]"
+                        >
+                          {couponLoading ? (
+                            <Loader2 className="animate-spin text-white" size={16} />
+                          ) : (
+                            "Apply"
+                          )}
+                        </Button>
+                      </div>
+                      {couponError && (
+                        <p className="text-xs text-red-500 font-medium animate-in fade-in slide-in-from-top-1 duration-200">
+                          {couponError}
+                        </p>
+                      )}
+                    </form>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">
+                      Applied Coupon
+                    </label>
+                    <div className="flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-xl animate-in zoom-in-95 duration-300">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                          <CheckCircle2 size={16} />
+                        </div>
+                        <div>
+                          <span className="font-bold text-secondary text-sm tracking-wider uppercase">{appliedCoupon.code}</span>
+                          <p className="text-xs text-primary font-semibold">Saved ₹{appliedCoupon.discountAmount.toLocaleString()}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={handleRemoveCoupon}
+                        className="p-1 hover:bg-primary/10 rounded-full text-gray-400 hover:text-primary transition-colors"
+                        title="Remove Coupon"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="space-y-4 pt-8 border-t border-gray-100">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400 font-medium">Subtotal</span>
-                  <span className="text-secondary font-bold">₹{cartTotal.toLocaleString()}</span>
+                  <span className="text-secondary font-bold">₹{subtotal.toLocaleString()}</span>
                 </div>
+                {appliedCoupon && (
+                  <div className="flex justify-between text-sm text-primary font-medium animate-in fade-in duration-300">
+                    <span>Discount ({appliedCoupon.code})</span>
+                    <span>-₹{discountAmount.toLocaleString()}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400 font-medium">Shipping</span>
-                  <span className="text-green-600 font-bold  tracking-wider">FREE</span>
+                  <span className="text-green-600 font-bold tracking-wider">FREE</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400 font-medium font-bold">GST (3%)</span>
-                  <span className="text-secondary font-bold">₹{((cartTotal + (giftWrap ? 50 : 0)) * 0.03).toLocaleString()}</span>
+                  <span className="text-secondary font-bold">₹{gstAmount.toLocaleString()}</span>
                 </div>
                 {giftWrap && (
                   <div className="flex justify-between text-sm text-primary">
@@ -250,7 +731,7 @@ export default function CheckoutPage() {
                 <div className="h-px bg-gray-100 my-2" />
                 <div className="flex justify-between text-xl font-bold">
                   <span className="text-secondary uppercase tracking-tight">Grand Total</span>
-                  <span className="text-primary ">₹{((cartTotal + (giftWrap ? 50 : 0)) * 1.03).toLocaleString()}</span>
+                  <span className="text-primary font-bold">₹{grandTotal.toLocaleString()}</span>
                 </div>
               </div>
             </div>

@@ -17,11 +17,46 @@ export async function POST(req: Request) {
   const userId = session.user.id
   const body = await req.json()
 
-  const { addressId, paymentMethod, items } = body
+  const { addressId, address, paymentMethod, items, discount, giftWrap } = body
 
   if (!items || items.length === 0) {
     return NextResponse.json(
       { error: "Cart is empty" },
+      { status: 400 }
+    )
+  }
+
+  let finalAddressId = addressId
+
+  // Create address inline if not provided
+  if (!finalAddressId && address) {
+    try {
+      const createdAddress = await prisma.address.create({
+        data: {
+          userId,
+          fullName: address.fullName,
+          phone: address.phone,
+          line1: address.line1,
+          line2: address.line2 || "",
+          city: address.city,
+          state: address.state || "Maharashtra",
+          postalCode: address.postalCode,
+          country: address.country || "India"
+        }
+      })
+      finalAddressId = createdAddress.id
+    } catch (addrErr) {
+      console.error("Address creation failed:", addrErr)
+      return NextResponse.json(
+        { error: "Failed to save shipping address" },
+        { status: 400 }
+      )
+    }
+  }
+
+  if (!finalAddressId) {
+    return NextResponse.json(
+      { error: "Shipping address is required" },
       { status: 400 }
     )
   }
@@ -61,13 +96,32 @@ export async function POST(req: Request) {
     })
   )
 
+  // authoritative price calculations
+  const discountVal = discount || 0
+  const giftWrapVal = giftWrap ? 50 : 0
+  const taxableAmount = Math.max(0, totalAmount - discountVal + giftWrapVal)
+  const gstAmount = taxableAmount * 0.03
+  const finalAmount = taxableAmount + gstAmount
+
+  // Map payment method to uppercase enum
+  let mappedPaymentMethod = "COD"
+  if (paymentMethod) {
+    const pmUpper = paymentMethod.toString().toUpperCase()
+    if (["RAZORPAY", "STRIPE", "COD", "UPI"].includes(pmUpper)) {
+      mappedPaymentMethod = pmUpper
+    } else if (pmUpper === "PAY ONLINE" || pmUpper === "ONLINE") {
+      mappedPaymentMethod = "RAZORPAY"
+    }
+  }
+
   const order = await prisma.order.create({
     data: {
       userId,
-      addressId,
+      addressId: finalAddressId,
       totalAmount,
-      finalAmount: totalAmount,
-      paymentMethod,
+      discount: discountVal,
+      finalAmount,
+      paymentMethod: mappedPaymentMethod as any,
       items: {
         create: orderItems
       }
@@ -78,4 +132,48 @@ export async function POST(req: Request) {
   })
 
   return NextResponse.json(order)
+}
+
+export async function GET() {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user?.id) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    )
+  }
+
+  const userId = session.user.id
+
+  try {
+    const orders = await prisma.order.findMany({
+      where: {
+        userId
+      },
+      include: {
+        address: true,
+        items: {
+          include: {
+            product: {
+              include: {
+                images: true
+              }
+            },
+            variant: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    })
+
+    return NextResponse.json(orders)
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to fetch orders" },
+      { status: 500 }
+    )
+  }
 }
