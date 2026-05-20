@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import WishlistToggle from "./WishlistToggle";
 
 interface ProductImage {
   url: string;
@@ -11,9 +12,11 @@ interface ProductImage {
 interface ProductGalleryProps {
   images: ProductImage[];
   productName: string;
+  productId?: string;
+  price?: number;
 }
 
-export default function ProductGallery({ images, productName }: ProductGalleryProps) {
+export default function ProductGallery({ images, productName, productId, price }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (!images || images.length === 0) {
@@ -62,9 +65,20 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
           </>
         )}
 
-        <button className="absolute top-6 right-6 p-4 rounded-full bg-white shadow-lg shadow-black/5 hover:bg-white transition-colors text-gray-400 hover:text-red-500 active:scale-90 duration-300">
-          <Heart size={20} />
-        </button>
+        {productId && (
+          <WishlistToggle 
+            product={{
+              id: productId,
+              productId: productId,
+              name: productName,
+              price: price || 0,
+              image: images?.[0]?.url || ""
+            }}
+            useCustomStyles={true}
+            iconSize={20}
+            className="absolute top-6 right-6 p-4 rounded-full bg-white shadow-lg shadow-black/5 hover:bg-white transition-colors text-gray-400 hover:text-red-500 active:scale-90 duration-300 z-10"
+          />
+        )}
       </div>
 
       {/* Thumbnails Grid */}

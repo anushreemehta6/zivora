@@ -25,7 +25,12 @@ export default async function Product({ params }: any) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
         
         {/* Left: Image Gallery */}
-        <ProductGallery images={product.images || []} productName={product.name} />
+        <ProductGallery 
+          images={product.images || []} 
+          productName={product.name} 
+          productId={product.id}
+          price={product.dynamicPrice || product.price || 0}
+        />
 
         {/* Right: Product Info */}
         <div className="flex flex-col">

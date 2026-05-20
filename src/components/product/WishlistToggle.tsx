@@ -13,9 +13,11 @@ type Props = {
     image: string;
   };
   className?: string;
+  iconSize?: number;
+  useCustomStyles?: boolean;
 };
 
-export default function WishlistToggle({ product, className }: Props) {
+export default function WishlistToggle({ product, className, iconSize = 18, useCustomStyles = false }: Props) {
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   
   const active = isInWishlist(product.id);
@@ -30,16 +32,25 @@ export default function WishlistToggle({ product, className }: Props) {
     }
   };
 
+  const defaultStyles = active 
+    ? "bg-primary text-white shadow-lg shadow-primary/30" 
+    : "bg-white/80 text-gray-400 hover:text-primary hover:bg-white shadow-xl";
+
+  const buttonClasses = useCustomStyles
+    ? className
+    : `p-2.5 rounded-full backdrop-blur-md transition-all active:scale-90 ${defaultStyles} ${className || ""}`;
+
   return (
     <button
       onClick={toggle}
-      className={`p-2.5 rounded-full backdrop-blur-md transition-all active:scale-90 ${
-        active 
-          ? "bg-primary text-white shadow-lg shadow-primary/30" 
-          : "bg-white/80 text-gray-400 hover:text-primary hover:bg-white shadow-xl"
-      } ${className}`}
+      className={buttonClasses}
     >
-      <Heart size={18} fill={active ? "currentColor" : "none"} strokeWidth={active ? 0 : 2} />
+      <Heart 
+        size={iconSize} 
+        fill={active ? (useCustomStyles ? "#ef4444" : "currentColor") : "none"} 
+        stroke={active ? (useCustomStyles ? "#ef4444" : "currentColor") : "currentColor"}
+        strokeWidth={active ? (useCustomStyles ? 0.5 : 0) : 2} 
+      />
     </button>
   );
 }
