@@ -82,7 +82,7 @@ export default function SimilarProducts({ categoryId, categorySlug, excludeId }:
 
   if (loading) {
     return (
-      <div className="mt-24 border-t border-gray-100 pt-16">
+      <div className="mt-14 border-t border-gray-100 pt-10">
         <div className="flex justify-between items-end mb-12">
           <div>
             <span className="text-primary font-bold text-xs uppercase tracking-widest block mb-2">Curated for You</span>
@@ -109,7 +109,7 @@ export default function SimilarProducts({ categoryId, categorySlug, excludeId }:
   }
 
   return (
-    <div className="mt-24 border-t border-gray-100 pt-16">
+    <div className="mt-14 border-t border-gray-100 pt-10">
       <div className="flex flex-col sm:flex-row justify-between sm:items-end mb-12 gap-6">
         <div className="group">
           <span className="text-primary font-bold text-xs uppercase tracking-widest block mb-1">Curated for You</span>

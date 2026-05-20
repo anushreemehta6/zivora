@@ -58,28 +58,30 @@ export default function ProductMetaActions({ productName, productSlug }: Props) 
   };
 
   return (
-    <div className="flex items-center gap-8 border-t border-gray-100 pt-8 mt-4">
-      <button 
-        onClick={handleShare}
-        className="flex items-center gap-2.5 text-sm font-bold text-gray-500 hover:text-secondary group transition-colors duration-300 active:scale-95"
-        title="Share this product with friends or copy link"
+    <div className="border-t border-gray-100 pt-6 mt-6">
+      <div 
+        className="flex items-center justify-center divide-x divide-gray-100 border border-gray-100 rounded-2xl bg-gradient-to-r from-gray-50/60 via-white to-gray-50/60 p-2 shadow-sm transition-all duration-300 hover:shadow hover:border-primary/10"
+        role="group"
+        aria-label="Product sharing and inquiry options"
       >
-        <div className="p-2 rounded-xl bg-gray-50 group-hover:bg-primary/10 group-hover:text-primary transition-all duration-300">
-          <Share2 size={16} className="transition-transform group-hover:scale-110" />
-        </div>
-        <span>Share</span>
-      </button>
+        <button 
+          onClick={handleShare}
+          className="flex-1 flex items-center justify-center gap-2.5 py-2.5 px-3 hover:text-primary text-[10px] md:text-xs font-bold uppercase tracking-widest text-secondary transition-all duration-300 active:scale-95 focus-visible:outline-none focus-visible:text-primary group"
+          title="Share this product masterpiece"
+        >
+          <Share2 size={13} className="text-primary transition-transform group-hover:scale-110 duration-300" />
+          <span>Share Piece</span>
+        </button>
 
-      <button 
-        onClick={handleAskQuestion}
-        className="flex items-center gap-2.5 text-sm font-bold text-gray-500 hover:text-secondary group transition-colors duration-300 active:scale-95"
-        title="Send an inquiry about this product"
-      >
-        <div className="p-2 rounded-xl bg-gray-50 group-hover:bg-primary/10 group-hover:text-primary transition-all duration-300">
-          <HelpCircle size={16} className="transition-transform group-hover:scale-110" />
-        </div>
-        <span>Ask a Question</span>
-      </button>
+        <button 
+          onClick={handleAskQuestion}
+          className="flex-1 flex items-center justify-center gap-2.5 py-2.5 px-3 hover:text-primary text-[10px] md:text-xs font-bold uppercase tracking-widest text-secondary transition-all duration-300 active:scale-95 focus-visible:outline-none focus-visible:text-primary group"
+          title="Consult with a jewelry expert about this piece"
+        >
+          <HelpCircle size={13} className="text-primary transition-transform group-hover:scale-110 duration-300" />
+          <span>Consult Artisan</span>
+        </button>
+      </div>
     </div>
   );
 }

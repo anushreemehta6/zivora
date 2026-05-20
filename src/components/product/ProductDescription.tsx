@@ -80,9 +80,9 @@ export default function ProductDescription({ description }: Props) {
         </div>
 
         {/* Premium Fading Gradient Overlay when collapsed */}
-        {/* {!isExpanded && (
-          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-gray-50 via-gray-50/80 to-transparent pointer-events-none transition-opacity duration-300" />
-        )} */}
+        {!isExpanded && (
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50/95 via-gray-50/70 to-transparent pointer-events-none transition-opacity duration-300" />
+        )}
       </div>
 
       {/* Luxury Read More / Read Less Toggle Button */}

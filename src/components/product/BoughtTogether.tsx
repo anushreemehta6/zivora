@@ -156,7 +156,7 @@ export default function BoughtTogether({ product }: Props) {
   };
 
   return (
-    <div className="mt-24 border-t border-gray-100 pt-16">
+    <div className="mt-14 border-t border-gray-100 pt-10">
       <div className="group mb-12">
         <span className="text-primary font-bold text-xs uppercase tracking-widest block mb-1">
           Complete the Look

@@ -12,26 +12,45 @@ export default function ProductTabs({ product }: { product: any }) {
   const tabs = ["Specifications", "Shipping & Gifting", "Reviews"];
 
   return (
-    <div className="mt-24 border-t border-gray-100 pt-16">
-      <div className="flex gap-12 border-b border-gray-100 mb-12 overflow-x-auto scrollbar-hide">
-        {tabs.map((tab) => (
-          <button 
-            key={tab} 
-            onClick={() => setActiveTab(tab)}
-            className={`pb-4 text-sm font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
-              activeTab === tab 
-                ? "border-b-2 border-primary text-secondary" 
-                : "text-gray-400 hover:text-secondary"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+    <div className="mt-14 border-t border-gray-100 pt-10">
+      <div 
+        className="flex gap-8 md:gap-12 border-b border-gray-100 mb-10 overflow-x-auto hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0"
+        role="tablist"
+        aria-label="Product Information Tabs"
+      >
+        {tabs.map((tab) => {
+          const tabId = `tab-${tab.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
+          const panelId = `panel-${tab.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
+          const isActive = activeTab === tab;
+
+          return (
+            <button 
+              key={tab} 
+              id={tabId}
+              role="tab"
+              aria-selected={isActive}
+              aria-controls={panelId}
+              onClick={() => setActiveTab(tab)}
+              className={`pb-4 text-xs md:text-sm font-bold uppercase tracking-widest transition-all duration-300 whitespace-nowrap focus-visible:outline-none focus-visible:text-primary ${
+                isActive 
+                  ? "border-b-2 border-primary text-secondary" 
+                  : "border-b-2 border-transparent text-gray-400 hover:text-secondary"
+              }`}
+            >
+              {tab}
+            </button>
+          );
+        })}
       </div>
       
-      <div className="min-h-[400px] animate-in fade-in duration-500">
+      <div className="min-h-[350px] transition-all duration-500">
         {activeTab === "Specifications" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
+          <div 
+            id="panel-specifications"
+            role="tabpanel"
+            aria-labelledby="tab-specifications"
+            className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
             <div className="space-y-6">
               <h3 className="text-2xl font-bold text-secondary uppercase tracking-tight">Technical Details</h3>
               <div className="space-y-4">
@@ -41,9 +60,9 @@ export default function ProductTabs({ product }: { product: any }) {
                   { label: "Product Weight", value: `${product.weight} g` },
                   { label: "SKU", value: product.sku },
                 ].map((spec) => (
-                  <div key={spec.label} className="flex justify-between py-3 border-b border-gray-50">
+                  <div key={spec.label} className="flex justify-between py-3 border-b border-gray-50 hover:bg-gray-50/30 px-1 rounded transition-colors">
                     <span className="text-gray-400 font-medium">{spec.label}</span>
-                    <span className="text-secondary font-bold group-hover:text-primary transition-colors">{spec.value}</span>
+                    <span className="text-secondary font-bold transition-colors">{spec.value}</span>
                   </div>
                 ))}
               </div>
@@ -56,12 +75,17 @@ export default function ProductTabs({ product }: { product: any }) {
         )}
 
         {activeTab === "Shipping & Gifting" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
-            <div className="space-y-8 animate-in slide-in-from-left duration-700">
+          <div 
+            id="panel-shippinggifting"
+            role="tabpanel"
+            aria-labelledby="tab-shippinggifting"
+            className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
+            <div className="space-y-8">
               <h3 className="text-3xl font-bold text-secondary uppercase tracking-tighter leading-none">
                 Signature <br /><span className="text-primary uppercase tracking-tight">Packaging</span>
               </h3>
-              <p className="text-gray-600 leading-relaxed text-lg font-medium">
+              <p className="text-gray-600 leading-relaxed text-base font-medium">
                 Every Zivora masterpiece arrives in our signature midnight-blue velvet-lined box, designed to keep your jewelry safe and make every unboxing a moment to remember. 
               </p>
               <div className="relative aspect-video rounded-[3rem] overflow-hidden shadow-2xl group ring-1 ring-black/5">
@@ -95,13 +119,20 @@ export default function ProductTabs({ product }: { product: any }) {
         )}
 
         {activeTab === "Reviews" && (
-          <ProductReviews 
-            productId={product.id} 
-            slug={product.slug}
-            initialReviews={product.reviews || []}
-            averageRating={product.averageRating || 4.8}
-            reviewCount={product.reviewCount || 0}
-          />
+          <div 
+            id="panel-reviews"
+            role="tabpanel"
+            aria-labelledby="tab-reviews"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
+            <ProductReviews 
+              productId={product.id} 
+              slug={product.slug}
+              initialReviews={product.reviews || []}
+              averageRating={product.averageRating || 4.8}
+              reviewCount={product.reviewCount || 0}
+            />
+          </div>
         )}
       </div>
     </div>

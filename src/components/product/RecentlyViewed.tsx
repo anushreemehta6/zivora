@@ -110,7 +110,7 @@ export default function RecentlyViewed({ currentSlug }: Props) {
 
   if (loading) {
     return (
-      <div className="mt-24 border-t border-gray-100 pt-16 animate-pulse">
+      <div className="mt-14 border-t border-gray-100 pt-10 animate-pulse">
         <div className="h-6 bg-gray-100 rounded w-1/4 mb-4" />
         <div className="h-10 bg-gray-100 rounded w-1/3 mb-10" />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -128,7 +128,7 @@ export default function RecentlyViewed({ currentSlug }: Props) {
   }
 
   return (
-    <div className="mt-24 border-t border-gray-100 pt-16">
+    <div className="mt-14 border-t border-gray-100 pt-10">
       <div className="flex justify-between items-end mb-12">
         <div className="group">
           <span className="text-primary font-bold text-xs uppercase tracking-widest block mb-1">

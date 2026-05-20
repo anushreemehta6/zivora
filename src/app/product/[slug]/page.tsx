@@ -37,23 +37,29 @@ export default async function Product({ params }: any) {
         />
 
         {/* Right: Product Info */}
-        <div className="flex flex-col">
-          {/* Breadcrumbs Placeholder */}
-          <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">
-            <span>Home</span>
-            <span>/</span>
-            <span>{product.type} Jewelry</span>
-            <span>/</span>
-            <span className="text-primary">
-              {product.category?.name || "Product"}
-            </span>
-          </div>
+        <main className="flex flex-col">
+          {/* Breadcrumbs */}
+          <nav aria-label="Breadcrumb" className="mb-4">
+            <ol className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+              <li>
+                <a href="/" className="hover:text-primary transition-colors">Home</a>
+              </li>
+              <li>/</li>
+              <li>
+                <span className="hover:text-primary transition-colors">{product.type} Jewelry</span>
+              </li>
+              <li>/</li>
+              <li aria-current="page" className="text-primary font-extrabold">
+                {product.category?.name || "Product"}
+              </li>
+            </ol>
+          </nav>
 
-          <h1 className="text-4xl lg:text-5xl font-bold text-secondary mb-4 leading-tight">
+          <h1 className="text-4xl lg:text-5xl font-playfair font-bold text-secondary mb-3 leading-tight tracking-tight">
             {product.name}
           </h1>
 
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex flex-wrap items-center gap-4 mb-4" aria-label={`Rated ${product.averageRating || 4.8} out of 5 stars with ${product.reviewCount || 0} reviews`}>
             <div className="flex items-center gap-1 text-primary">
               {[...Array(5)].map((_, i) => (
                 <Star
@@ -70,13 +76,13 @@ export default async function Product({ params }: any) {
               </span>
             </div>
             <div className="h-4 w-px bg-gray-200" />
-            <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">
+            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100/50 px-2.5 py-1 rounded-full uppercase tracking-widest shadow-sm">
               In Stock
             </span>
           </div>
 
-          <div className="flex items-baseline gap-4 mb-10">
-            <span className="text-4xl font-bold text-secondary">
+          <div className="flex flex-wrap items-center gap-4 mb-6 w-full">
+            <span className="text-4xl font-extrabold text-secondary tracking-tight">
               ₹{(product.dynamicPrice || product.price || 0).toLocaleString()}
             </span>
             {product.comparePrice && (
@@ -84,14 +90,15 @@ export default async function Product({ params }: any) {
                 ₹{product.comparePrice.toLocaleString()}
               </span>
             )}
-            <span className="text-xs font-bold text-primary uppercase tracking-widest">
+            <span className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/5 px-2 py-1 rounded border border-primary/10">
               Inclusive of all taxes
             </span>
-            <span>
-              <button className="text-primary text-xs hover:underline flex items-center gap-1">
-                <Info size={20} /> Size Guide
-              </button>
-            </span>
+            <button 
+              className="text-primary hover:text-secondary text-xs hover:underline flex items-center gap-1.5 font-bold uppercase tracking-wider transition-colors ml-auto"
+              aria-label="View Size Guide"
+            >
+              <Info size={14} /> Size Guide
+            </button>
           </div>
 
           <ProductDescription description={product.description} />
@@ -99,29 +106,44 @@ export default async function Product({ params }: any) {
           <ProductActions product={product} />
 
           {/* Trust Badges */}
-          <div className="grid grid-cols-3 gap-4 p-6 bg-background-soft rounded-2xl border border-gray-100 mb-10">
-            <div className="flex flex-col items-center text-center gap-2">
-              <ShieldCheck className="text-primary" size={24} />
-              <span className="text-[10px] font-bold text-secondary uppercase">
+          <div className="grid grid-cols-3 gap-3 p-5 bg-gradient-to-br from-gray-50/80 via-white/50 to-gray-50/30 rounded-3xl border border-gray-100/80 shadow-sm mb-6 transition-all duration-500 hover:shadow-md hover:border-primary/10">
+            <div className="flex flex-col items-center text-center gap-1.5 group p-2">
+              <div className="p-2.5 rounded-full bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 scale-95 group-hover:scale-100 shadow-sm">
+                <ShieldCheck size={20} />
+              </div>
+              <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">
                 Certified
               </span>
-            </div>
-            <div className="flex flex-col items-center text-center gap-2">
-              <Truck className="text-primary" size={24} />
-              <span className="text-[10px] font-bold text-secondary uppercase">
-                Fast Ship
+              <span className="text-[8px] text-gray-400 font-bold uppercase tracking-widest hidden sm:block">
+                BIS Hallmarked
               </span>
             </div>
-            <div className="flex flex-col items-center text-center gap-2">
-              <RefreshCcw className="text-primary" size={24} />
-              <span className="text-[10px] font-bold text-secondary uppercase">
+            <div className="flex flex-col items-center text-center gap-1.5 group p-2">
+              <div className="p-2.5 rounded-full bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 scale-95 group-hover:scale-100 shadow-sm">
+                <Truck size={20} />
+              </div>
+              <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">
+                Fast Ship
+              </span>
+              <span className="text-[8px] text-gray-400 font-bold uppercase tracking-widest hidden sm:block">
+                Insured Courier
+              </span>
+            </div>
+            <div className="flex flex-col items-center text-center gap-1.5 group p-2">
+              <div className="p-2.5 rounded-full bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 scale-95 group-hover:scale-100 shadow-sm">
+                <RefreshCcw size={20} />
+              </div>
+              <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">
                 Easy Return
+              </span>
+              <span className="text-[8px] text-gray-400 font-bold uppercase tracking-widest hidden sm:block">
+                7-Day Insured
               </span>
             </div>
           </div>
 
           <ProductMetaActions productName={product.name} productSlug={slug} />
-        </div>
+        </main>
       </div>
 
       {/* Interactive Tabs / Detailed Info */}
