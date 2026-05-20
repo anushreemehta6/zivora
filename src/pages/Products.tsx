@@ -4,14 +4,19 @@ import { Star, ShoppingBag } from "lucide-react"
 
 async function getProducts() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const res = await fetch(
-    `${baseUrl}/api/admin/products`,
-    { cache: "no-store" }
-  )
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/admin/products`,
+      { cache: "no-store" }
+    )
 
-  if (!res.ok) throw new Error("Failed to fetch products")
-  const data = await res.json();
-  return data.slice(0,8);
+    if (!res.ok) throw new Error("Failed to fetch products")
+    const data = await res.json();
+    return data.slice(0,8);
+  } catch (error) {
+    console.error("Failed to fetch products during build:", error);
+    return [];
+  }
 }
 
 export default async function Products() {

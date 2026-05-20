@@ -11,19 +11,56 @@ export async function GET(req: Request) {
   const tag = searchParams.get("tag")
   const minPrice = Number(searchParams.get("minPrice")) || undefined
   const maxPrice = Number(searchParams.get("maxPrice")) || undefined
+  const sort = searchParams.get("sort") || "newest"
   
   const page = Number(searchParams.get("page")) || 1
   const limit = 12
+
+  let orderBy: any = { createdAt: "desc" }
+  if (sort === "price-asc") {
+    orderBy = { price: "asc" }
+  } else if (sort === "price-desc") {
+    orderBy = { price: "desc" }
+  } else if (sort === "trending") {
+    orderBy = { isFeatured: "desc" }
+  } else if (sort === "name-asc") {
+    orderBy = { name: "asc" }
+  } else if (sort === "name-desc") {
+    orderBy = { name: "desc" }
+  }
+
+  let categoryFilter: any = undefined
+  if (category) {
+    const categoryTerms = [category]
+    if (category.endsWith("s") && category.length > 1) {
+      categoryTerms.push(category.slice(0, -1))
+    } else {
+      categoryTerms.push(category + "s")
+    }
+
+    categoryFilter = {
+      OR: categoryTerms.flatMap(term => [
+        {
+          slug: {
+            contains: term,
+            mode: "insensitive"
+          }
+        },
+        {
+          name: {
+            contains: term,
+            mode: "insensitive"
+          }
+        }
+      ])
+    }
+  }
 
   const products = await prisma.product.findMany({
     where: {
       name: { contains: search, mode: "insensitive" },
       isActive: true,
-      category: category
-        ? {
-            slug: category
-          }
-        : undefined,
+      category: categoryFilter,
       collection: occasion
         ? {
             slug: occasion
@@ -47,7 +84,7 @@ export async function GET(req: Request) {
     },
     skip: (page - 1) * limit,
     take: limit,
-    orderBy: { createdAt: "desc" }
+    orderBy: orderBy
   })
 
   // Add Dynamic Pricing Calculation

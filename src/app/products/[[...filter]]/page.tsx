@@ -3,6 +3,7 @@ import Image from "next/image"
 import { Filter, ChevronDown, ShoppingBag, Star } from "lucide-react"
 
 import WishlistToggle from "@/components/product/WishlistToggle"
+import NameFilterInput from "@/components/product/NameFilterInput"
 
 async function getProducts(filters: any) {
   const { category, occasion, bond, tag, minPrice, maxPrice, sort, search } = filters;
@@ -18,14 +19,19 @@ async function getProducts(filters: any) {
   if (sort) query.append("sort", sort);
   if (search) query.append("search", search);
 
-  const res = await fetch(
-    `${baseUrl}/api/products?${query.toString()}`,
-    { cache: "no-store" }
-  )
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/products?${query.toString()}`,
+      { cache: "no-store" }
+    )
 
-  if (!res.ok) throw new Error("Failed to fetch products")
+    if (!res.ok) throw new Error("Failed to fetch products")
 
-  return res.json()
+    return res.json()
+  } catch (error) {
+    console.error("Failed to fetch products in route page during build:", error);
+    return [];
+  }
 }
 
 export default async function ProductsPage({ 
@@ -42,9 +48,10 @@ export default async function ProductsPage({
   let category = sParams.category;
   let occasion = sParams.occasion;
   let bond = sParams.bond;
-  let minPrice = sParams.minPrice;
-  let maxPrice = sParams.maxPrice;
+  let minPrice = sParams.minPrice ? Number(sParams.minPrice) : undefined;
+  let maxPrice = sParams.maxPrice ? Number(sParams.maxPrice) : undefined;
   const sort = sParams.sort;
+  let search = sParams.search;
 
   // Override / Extend with path segments
   const TAG_SEGMENTS = ["for-her", "for-him", "gift-sets", "anniversary", "birthday", "wedding", "trending"];
@@ -64,6 +71,7 @@ export default async function ProductsPage({
       if (type === "occasion") occasion = slug;
       if (type === "bond") bond = slug;
       if (type === "tag") tag = slug;
+      if (type === "name") search = slug.replace(/-/g, " ");
       if (type === "price") {
         if (slug === "under-1999") maxPrice = 1999;
         else if (slug === "2000-4999") { minPrice = 2000; maxPrice = 4999; }
@@ -73,7 +81,52 @@ export default async function ProductsPage({
     }
   }
 
-  const products = await getProducts({ category, occasion, bond, tag, minPrice, maxPrice, sort, search: sParams.search })
+  // URL Preservation Helper
+  const buildUrl = (updates: { category?: string; type?: string; slug?: string; sort?: string; clearAll?: boolean }) => {
+    if (updates.clearAll) {
+      return "/products";
+    }
+
+    const newParams = new URLSearchParams();
+    
+    // Maintain existing search and sort unless overwritten
+    if (updates.sort !== undefined) {
+      if (updates.sort) newParams.set("sort", updates.sort);
+    } else if (sort) {
+      newParams.set("sort", sort);
+    }
+
+    if (search) {
+      newParams.set("search", search);
+    }
+
+    // Determine path based on category or other path filters
+    let path = "/products";
+    let newFilter = filter ? [...filter] : [];
+
+    if (updates.category !== undefined) {
+      if (updates.category) {
+        newFilter = [updates.category];
+      } else {
+        newFilter = [];
+      }
+    } else if (updates.type !== undefined && updates.slug !== undefined) {
+      if (updates.type && updates.slug) {
+        newFilter = [updates.type, updates.slug];
+      } else {
+        newFilter = [];
+      }
+    }
+
+    if (newFilter.length > 0) {
+      path += `/${newFilter.join("/")}`;
+    }
+
+    const queryStr = newParams.toString();
+    return queryStr ? `${path}?${queryStr}` : path;
+  }
+
+  const products = await getProducts({ category, occasion, bond, tag, minPrice, maxPrice, sort, search })
 
   // Derive Display Title
   let displayTitle = "All Jewelry";
@@ -86,7 +139,7 @@ export default async function ProductsPage({
     else if (tag === "gift-sets") displayTitle = "Exclusive Gift Sets";
     else displayTitle = `${tag.replace("-", " ").charAt(0).toUpperCase() + tag.replace("-", " ").slice(1)} Collection`;
   }
-  if (sParams.search) displayTitle = `Results for "${sParams.search}"`;
+  if (search) displayTitle = `Results for "${search}"`;
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-12">
@@ -105,10 +158,12 @@ export default async function ProductsPage({
               Sort By <ChevronDown size={16} />
             </button>
             <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-              <Link href="/products?sort=newest" className="block px-4 py-2 text-sm hover:bg-gray-50 hover:text-primary">Newest First</Link>
-              <Link href="/products?sort=price-asc" className="block px-4 py-2 text-sm hover:bg-gray-50 hover:text-primary">Price: Low to High</Link>
-              <Link href="/products?sort=price-desc" className="block px-4 py-2 text-sm hover:bg-gray-50 hover:text-primary">Price: High to Low</Link>
-              <Link href="/products?sort=trending" className="block px-4 py-2 text-sm hover:bg-gray-50 hover:text-primary">Trending</Link>
+              <Link href={buildUrl({ sort: "newest" })} className={`block px-4 py-2 text-sm hover:bg-gray-50 hover:text-primary ${sort === "newest" || !sort ? "text-primary font-bold" : "text-gray-600"}`}>Newest First</Link>
+              <Link href={buildUrl({ sort: "price-asc" })} className={`block px-4 py-2 text-sm hover:bg-gray-50 hover:text-primary ${sort === "price-asc" ? "text-primary font-bold" : "text-gray-600"}`}>Price: Low to High</Link>
+              <Link href={buildUrl({ sort: "price-desc" })} className={`block px-4 py-2 text-sm hover:bg-gray-50 hover:text-primary ${sort === "price-desc" ? "text-primary font-bold" : "text-gray-600"}`}>Price: High to Low</Link>
+              <Link href={buildUrl({ sort: "name-asc" })} className={`block px-4 py-2 text-sm hover:bg-gray-50 hover:text-primary ${sort === "name-asc" ? "text-primary font-bold" : "text-gray-600"}`}>Name: A to Z</Link>
+              <Link href={buildUrl({ sort: "name-desc" })} className={`block px-4 py-2 text-sm hover:bg-gray-50 hover:text-primary ${sort === "name-desc" ? "text-primary font-bold" : "text-gray-600"}`}>Name: Z to A</Link>
+              <Link href={buildUrl({ sort: "trending" })} className={`block px-4 py-2 text-sm hover:bg-gray-50 hover:text-primary ${sort === "trending" ? "text-primary font-bold" : "text-gray-600"}`}>Trending</Link>
             </div>
           </div>
         </div>
@@ -124,6 +179,12 @@ export default async function ProductsPage({
             </h3>
             
             <div className="space-y-8">
+              {/* Name Filter */}
+              <div>
+                <h4 className="font-bold text-sm uppercase tracking-wider text-gray-400 mb-4">Filter By Name</h4>
+                <NameFilterInput />
+              </div>
+
               {/* Category Filter */}
               <div>
                 <h4 className="font-bold text-sm uppercase tracking-wider text-gray-400 mb-4">Category</h4>
@@ -131,13 +192,13 @@ export default async function ProductsPage({
                   {["Rings", "Earrings", "Necklaces", "Bracelets", "Pendants", "Mangalsutra", "Bangles", "Anklets"].map((cat) => (
                     <Link 
                       key={cat} 
-                      href={`/products/${cat.toLowerCase()}`}
+                      href={buildUrl({ category: cat.toLowerCase() })}
                       className={`block text-sm font-medium transition-colors hover:text-primary ${category === cat.toLowerCase() ? "text-primary font-bold" : "text-gray-600"}`}
                     >
                       {cat}
                     </Link>
                   ))}
-                  <Link href="/products" className="block text-sm font-medium text-gray-400 hover:text-primary">Clear All</Link>
+                  <Link href={buildUrl({ category: "" })} className="block text-sm font-medium text-gray-400 hover:text-primary">Clear Category</Link>
                 </div>
               </div>
 
@@ -145,10 +206,10 @@ export default async function ProductsPage({
               <div>
                 <h4 className="font-bold text-sm uppercase tracking-wider text-gray-400 mb-4">Price Range</h4>
                 <div className="space-y-3">
-                  <Link href="/products/price/under-1999" className="block text-sm font-medium text-gray-600 hover:text-primary">Under ₹1,999</Link>
-                  <Link href="/products/price/2000-4999" className="block text-sm font-medium text-gray-600 hover:text-primary">₹2,000 - ₹4,999</Link>
-                  <Link href="/products/price/5000-9999" className="block text-sm font-medium text-gray-600 hover:text-primary">₹5,000 - ₹9,999</Link>
-                  <Link href="/products/price/luxury" className="block text-sm font-medium text-gray-600 hover:text-primary">Above ₹10,000</Link>
+                  <Link href={buildUrl({ type: "price", slug: "under-1999" })} className={`block text-sm font-medium hover:text-primary ${minPrice === undefined && maxPrice === 1999 ? "text-primary font-bold" : "text-gray-600"}`}>Under ₹1,999</Link>
+                  <Link href={buildUrl({ type: "price", slug: "2000-4999" })} className={`block text-sm font-medium hover:text-primary ${minPrice === 2000 && maxPrice === 4999 ? "text-primary font-bold" : "text-gray-600"}`}>₹2,000 - ₹4,999</Link>
+                  <Link href={buildUrl({ type: "price", slug: "5000-9999" })} className={`block text-sm font-medium hover:text-primary ${minPrice === 5000 && maxPrice === 9999 ? "text-primary font-bold" : "text-gray-600"}`}>₹5,000 - ₹9,999</Link>
+                  <Link href={buildUrl({ type: "price", slug: "luxury" })} className={`block text-sm font-medium hover:text-primary ${minPrice === 10000 && maxPrice === undefined ? "text-primary font-bold" : "text-gray-600"}`}>Above ₹10,000</Link>
                 </div>
               </div>
 
