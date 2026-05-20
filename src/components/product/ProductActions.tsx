@@ -29,31 +29,6 @@ export default function ProductActions({ product }: Props) {
 
   return (
     <div className="space-y-8 mb-12">
-      {/* Variant Selector */}
-      <div>
-        <h4 className="font-bold text-sm text-secondary uppercase tracking-wider mb-4 flex items-center justify-between">
-          Select Size
-          <button className="text-primary text-[10px] hover:underline flex items-center gap-1">
-            <Info size={12} /> Size Guide
-          </button>
-        </h4>
-        <div className="flex flex-wrap gap-3">
-          {["12", "14", "16", "18"].map((size) => (
-            <button
-              key={size}
-              onClick={() => setSelectedSize(size)}
-              className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center font-bold text-sm transition-all active:scale-95 ${
-                selectedSize === size
-                  ? "border-primary text-primary bg-primary/5 shadow-inner"
-                  : "border-gray-100 text-gray-500 hover:border-gray-300"
-              }`}
-            >
-              {size}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div className="flex flex-col sm:flex-row gap-4">
         <Button
           variant="gold"

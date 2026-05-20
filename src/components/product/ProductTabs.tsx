@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { premiumPackaging } from "@/assets";
 import ProductReviews from "./ProductReviews";
+import ProductDescription from "./ProductDescription";
 
 export default function ProductTabs({ product }: { product: any }) {
   const [activeTab, setActiveTab] = useState("Specifications");
@@ -38,7 +39,6 @@ export default function ProductTabs({ product }: { product: any }) {
                   { label: "Metal", value: product.type },
                   { label: "Purity", value: product.purity },
                   { label: "Product Weight", value: `${product.weight} g` },
-                  { label: "Making Charges", value: `₹${product.makingCharges}` },
                   { label: "SKU", value: product.sku },
                 ].map((spec) => (
                   <div key={spec.label} className="flex justify-between py-3 border-b border-gray-50">
@@ -49,11 +49,8 @@ export default function ProductTabs({ product }: { product: any }) {
               </div>
             </div>
             
-            <div className="bg-background-soft p-10 rounded-[3rem] border border-gray-100">
-               <h4 className="font-bold text-secondary mb-4 uppercase text-xs tracking-widest text-primary">Artisanal Process</h4>
-               <p className="text-gray-600 leading-relaxed text-lg font-medium">
-                  Each product is handcrafted by our master artisans, ensuring that every curve and facet reflects our heritage of excellence.
-               </p>
+            <div className="hidden md:block">
+              <ProductDescription description={product.description} />
             </div>
           </div>
         )}

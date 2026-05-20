@@ -13,8 +13,12 @@ export async function GET(req: Request) {
   const maxPrice = Number(searchParams.get("maxPrice")) || undefined
   const sort = searchParams.get("sort") || "newest"
   
+  const slugsParam = searchParams.get("slugs")
+  const excludeId = searchParams.get("excludeId")
+  const customLimit = searchParams.get("limit")
+  
   const page = Number(searchParams.get("page")) || 1
-  const limit = 12
+  const limit = customLimit ? Number(customLimit) : 12
 
   let orderBy: any = { createdAt: "desc" }
   if (sort === "price-asc") {
@@ -56,8 +60,17 @@ export async function GET(req: Request) {
     }
   }
 
-  const products = await prisma.product.findMany({
-    where: {
+  // Construct dynamic Prisma where clause
+  let whereClause: any = {}
+  
+  if (slugsParam) {
+    const slugList = slugsParam.split(",").map(s => s.trim()).filter(Boolean)
+    whereClause = {
+      slug: { in: slugList },
+      isActive: true
+    }
+  } else {
+    whereClause = {
       name: { contains: search, mode: "insensitive" },
       isActive: true,
       category: categoryFilter,
@@ -75,7 +88,16 @@ export async function GET(req: Request) {
         gte: minPrice,
         lte: maxPrice
       }
-    },
+    }
+  }
+
+  // Handle product exclusion if provided
+  if (excludeId) {
+    whereClause.id = { not: excludeId }
+  }
+
+  const products = await prisma.product.findMany({
+    where: whereClause,
     include: {
       images: true,
       variants: true,

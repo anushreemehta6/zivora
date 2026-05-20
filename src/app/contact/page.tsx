@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Send, MessageSquare, Clock, Globe } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { toast } from "react-hot-toast";
@@ -14,6 +14,21 @@ export default function ContactPage() {
   });
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const subjectParam = searchParams.get("subject");
+      const messageParam = searchParams.get("message");
+      if (subjectParam || messageParam) {
+        setForm((prev) => ({
+          ...prev,
+          subject: subjectParam ? decodeURIComponent(subjectParam) : prev.subject,
+          message: messageParam ? decodeURIComponent(messageParam) : prev.message,
+        }));
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
