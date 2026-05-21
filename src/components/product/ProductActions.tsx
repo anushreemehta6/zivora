@@ -14,33 +14,33 @@ export default function ProductActions({ product }: Props) {
   const isRing = categoryName.includes("ring");
   const isBraceletOrBangle = categoryName.includes("bracelet") || categoryName.includes("bangle");
 
-  // Determine sizes based on category type
-  let sizes: string[] = [];
-  let sizeLabel = "Size";
+  // // Determine sizes based on category type
+  // let sizes: string[] = [];
+  // let sizeLabel = "Size";
   
-  if (isRing) {
-    sizes = ["12", "14", "16", "18", "20"];
-    sizeLabel = "Ring Size (Indian)";
-  } else if (isBraceletOrBangle) {
-    sizes = ["2.2", "2.4", "2.6", "2.8"];
-    sizeLabel = "Bangle Size (Diameter)";
-  } else {
-    sizes = ["Standard"];
-    sizeLabel = "Size";
-  }
+  // if (isRing) {
+  //   sizes = ["12", "14", "16", "18", "20"];
+  //   sizeLabel = "Ring Size (Indian)";
+  // } else if (isBraceletOrBangle) {
+  //   sizes = ["2.2", "2.4", "2.6", "2.8"];
+  //   sizeLabel = "Bangle Size (Diameter)";
+  // } else {
+  //   sizes = ["Standard"];
+  //   sizeLabel = "Size";
+  // }
 
-  const [selectedSize, setSelectedSize] = useState(sizes[0]);
+  // const [selectedSize, setSelectedSize] = useState(sizes[0]);
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
     addToCart({
-      id: `${product.id}-${selectedSize}`,
+      id: `${product.id}`,
       productId: product.id,
       name: product.name,
       price: product.dynamicPrice || product.price || 0,
       image: product.images?.[0]?.url || "",
       quantity: 1,
-      variantName: selectedSize === "Standard" ? "Standard Size" : `${sizeLabel}: ${selectedSize}`,
+      // variantName: selectedSize === "Standard" ? "Standard Size" : `${sizeLabel}: ${selectedSize}`,
     });
   };
 
@@ -48,7 +48,7 @@ export default function ProductActions({ product }: Props) {
     <div className="space-y-6 mb-8">
       {/* Size Selection Section */}
       <div className="space-y-3">
-        <div className="flex justify-between items-center">
+        {/* <div className="flex justify-between items-center">
           <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">
             {sizeLabel}
           </span>
@@ -57,8 +57,8 @@ export default function ProductActions({ product }: Props) {
               Selected: {selectedSize}
             </span>
           )}
-        </div>
-
+        </div> */}
+{/* 
         {sizes.length > 1 ? (
           <div className="flex flex-wrap gap-3" role="radiogroup" aria-label="Select sizing">
             {sizes.map((size) => {
@@ -81,25 +81,29 @@ export default function ProductActions({ product }: Props) {
               );
             })}
           </div>
-        ) : (
+        ) : ( */}
           <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-100 px-4 py-2 rounded-full shadow-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             <span className="text-xs font-bold text-secondary uppercase tracking-widest">
               Adjustable Fit / One Size
             </span>
           </div>
-        )}
+        {/* )} */}
       </div>
 
       {/* Cart & Wishlist CTAs */}
       <div className="flex flex-col sm:flex-row gap-4">
-        <Button
-          variant="gold"
-          onClick={handleAddToCart}
-          className="flex-grow py-5 text-lg font-bold shadow-xl shadow-primary/20 transition-all hover:shadow-primary/40 active:scale-98 tracking-widest uppercase"
-        >
-          Add to Cart
-        </Button>
+      <button
+  onClick={handleAddToCart}
+  disabled={!product.isActive}
+  className={`w-full h-14 rounded-2xl font-bold transition-all ${
+    product.isActive
+      ? "bg-primary text-white hover:opacity-90"
+      : "bg-gray-200 text-gray-500 cursor-not-allowed"
+  }`}
+>
+  {product.isActive ? "Add To Cart" : "Out Of Stock"}
+</button>
         <WishlistToggle 
           product={{
             id: product.id,

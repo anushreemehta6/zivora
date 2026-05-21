@@ -1,5 +1,12 @@
 import Image from "next/image";
-import { Star, ShieldCheck, Truck, RefreshCcw, Heart, Info } from "lucide-react";
+import {
+  Star,
+  ShieldCheck,
+  Truck,
+  RefreshCcw,
+  Heart,
+  Info,
+} from "lucide-react";
 import ProductActions from "@/components/product/ProductActions";
 import ProductTabs from "@/components/product/ProductTabs";
 import ProductGallery from "@/components/product/ProductGallery";
@@ -42,11 +49,15 @@ export default async function Product({ params }: any) {
           <nav aria-label="Breadcrumb" className="mb-4">
             <ol className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               <li>
-                <a href="/" className="hover:text-primary transition-colors">Home</a>
+                <a href="/" className="hover:text-primary transition-colors">
+                  Home
+                </a>
               </li>
               <li>/</li>
               <li>
-                <span className="hover:text-primary transition-colors">{product.type} Jewelry</span>
+                <span className="hover:text-primary transition-colors">
+                  {product.type} Jewelry
+                </span>
               </li>
               <li>/</li>
               <li aria-current="page" className="text-primary font-extrabold">
@@ -59,7 +70,10 @@ export default async function Product({ params }: any) {
             {product.name}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-4 mb-4" aria-label={`Rated ${product.averageRating || 4.8} out of 5 stars with ${product.reviewCount || 0} reviews`}>
+          <div
+            className="flex flex-wrap items-center gap-4 mb-4"
+            aria-label={`Rated ${product.averageRating || 4.8} out of 5 stars with ${product.reviewCount || 0} reviews`}
+          >
             <div className="flex items-center gap-1 text-primary">
               {[...Array(5)].map((_, i) => (
                 <Star
@@ -76,9 +90,15 @@ export default async function Product({ params }: any) {
               </span>
             </div>
             <div className="h-4 w-px bg-gray-200" />
-            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100/50 px-2.5 py-1 rounded-full uppercase tracking-widest shadow-sm">
-              In Stock
-            </span>
+            <div
+  className={`px-4 py-2 rounded-full text-xs font-bold ${
+    product.isActive
+      ? "bg-green-100 text-green-700"
+      : "bg-red-100 text-red-700"
+  }`}
+>
+  {product.isActive ? "In Stock" : "Out of Stock"}
+</div>
           </div>
 
           <div className="flex flex-wrap items-center gap-4 mb-6 w-full">
@@ -93,7 +113,7 @@ export default async function Product({ params }: any) {
             <span className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/5 px-2 py-1 rounded border border-primary/10">
               Inclusive of all taxes
             </span>
-            <button 
+            <button
               className="text-primary hover:text-secondary text-xs hover:underline flex items-center gap-1.5 font-bold uppercase tracking-wider transition-colors ml-auto"
               aria-label="View Size Guide"
             >
@@ -153,10 +173,10 @@ export default async function Product({ params }: any) {
       <BoughtTogether product={product} />
 
       {/* Similar Products Grid */}
-      <SimilarProducts 
-        categoryId={product.categoryId} 
-        categorySlug={product.category?.slug || ""} 
-        excludeId={product.id} 
+      <SimilarProducts
+        categoryId={product.categoryId}
+        categorySlug={product.category?.slug || ""}
+        excludeId={product.id}
       />
 
       {/* Recently Viewed Carousel */}

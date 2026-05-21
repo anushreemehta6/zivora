@@ -107,7 +107,7 @@ export default function LoginPage() {
                 <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  Enter Boutique
+                  Enter Zivora
                   <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
                 </>
               )}

@@ -154,13 +154,13 @@ export default function OrdersPage() {
               year: "numeric",
             });
             
-            const expectedDate = new Date(order.createdAt);
-            expectedDate.setDate(expectedDate.getDate() + 5);
-            const formattedExpected = expectedDate.toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            });
+           const deliveredDate = order.deliveredAt
+  ? new Date(order.deliveredAt).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+  : null;
 
             // Map status
             const statusLabels: Record<string, string> = {
@@ -236,7 +236,11 @@ export default function OrdersPage() {
                 <div className="px-8 py-6 bg-background-soft border-t border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-gray-500">
                     <Clock size={16} className="text-primary" />
-                    <span>{order.status === "DELIVERED" ? "Delivered On" : "Expected Delivery"}: {formattedExpected}</span>
+                    <span>
+  {order.status === "DELIVERED"
+    ? `Delivered On: ${deliveredDate}`
+    : `Expected Delivery: Pending`}
+</span>
                     <div className="hidden sm:block h-4 w-px bg-gray-200 mx-2" />
                     <MapPin size={16} className="text-primary" />
                     <span>{order.address.fullName}, {order.address.city} - {order.address.postalCode}</span>

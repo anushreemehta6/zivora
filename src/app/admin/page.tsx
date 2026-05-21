@@ -135,7 +135,7 @@ export default function AdminDashboard() {
           >
             <div className="flex items-center justify-between mb-4">
               <div
-                className={`p-3.5 rounded-2xl transition-colors duration-500 ${stat.bg} ${stat.color} group-hover:bg-secondary group-hover:text-primary`}
+                className={`p-3.5 rounded-2xl transition-colors duration-500 ${stat.bg} ${stat.color} group-hover:text-primary`}
               >
                 <stat.icon size={20} />
               </div>
@@ -166,11 +166,10 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-bold ">Recent Activity</h3>
             <Link href={"/admin/orders"}>
-            <button  className="text-xs font-bold text-primary hover:underline uppercase tracking-widest">
-              View All
-            </button>
+              <button className="text-xs font-bold text-primary hover:underline uppercase tracking-widest">
+                View All
+              </button>
             </Link>
-            
           </div>
           <div className="space-y-6">
             {recentOrders.map((order: any) => (
@@ -218,28 +217,48 @@ export default function AdminDashboard() {
               Manage your store efficiently with these quick shortcuts.
             </p>
 
-            <div className="space-y-3">
-              <button className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-xl text-left px-5 text-sm font-bold transition-all flex items-center justify-between group">
-                Add New Product
-                <ArrowUpRight
-                  size={16}
-                  className="text-primary opacity-0 group-hover:opacity-100 transition-all"
-                />
-              </button>
-              <button className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-xl text-left px-5 text-sm font-bold transition-all flex items-center justify-between group">
-                Update Silver Rate
-                <ArrowUpRight
-                  size={16}
-                  className="text-primary opacity-0 group-hover:opacity-100 transition-all"
-                />
-              </button>
-              <button className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-xl text-left px-5 text-sm font-bold transition-all flex items-center justify-between group">
-                Generate Sales Report
-                <ArrowUpRight
-                  size={16}
-                  className="text-primary opacity-0 group-hover:opacity-100 transition-all"
-                />
-              </button>
+            <div className="flex flex-col gap-4">
+              <Link href={"/admin/product"}>
+                <button className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-xl text-left px-5 text-sm font-bold transition-all flex items-center justify-between group">
+                  Add New Product
+                  <ArrowUpRight
+                    size={16}
+                    className="text-primary opacity-0 group-hover:opacity-100 transition-all"
+                  />
+                </button>
+              </Link>
+              <Link href={"/admin/silver-price"}>
+                <button className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-xl text-left px-5 text-sm font-bold transition-all flex items-center justify-between group">
+                  Update Silver Rate
+                  <ArrowUpRight
+                    size={16}
+                    className="text-primary opacity-0 group-hover:opacity-100 transition-all"
+                  />
+                </button>
+              </Link>
+
+              <button
+  disabled
+  className="
+    w-full py-4 rounded-xl text-left px-5 text-sm font-bold
+    transition-all flex items-center justify-between
+
+    bg-white/5
+    hover:bg-white/10
+
+    disabled:opacity-50
+    disabled:cursor-not-allowed
+    disabled:pointer-events-none
+    disabled:hover:bg-white/5
+  "
+>
+  Generate Sales Report
+
+  <ArrowUpRight
+    size={16}
+    className="text-primary"
+  />
+</button>
             </div>
           </div>
 

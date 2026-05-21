@@ -264,6 +264,8 @@ model Order {
   items     OrderItem[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+
+   deliveredAt   DateTime?
 }
 
 model OrderItem {

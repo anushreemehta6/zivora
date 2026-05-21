@@ -1,38 +1,40 @@
+
+import { OrderStatus } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { OrderStatus } from "@prisma/client";
 
 export async function PATCH(
   req: Request,
-  context: any
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     const body = await req.json();
-
-    const { id: orderId } = await context.params;
-
-    console.log("ORDER ID:", orderId);
-    console.log("STATUS:", body.status);
 
     const updatedOrder = await prisma.order.update({
       where: {
-        id: orderId,
+        id,
       },
 
       data: {
-        status: body.status as OrderStatus,
+        status: body.status,
+
+        deliveredAt:
+          body.status === "DELIVERED"
+            ? new Date()
+            : null,
       },
     });
 
     return NextResponse.json(updatedOrder);
 
   } catch (error) {
-    console.error("UPDATE ERROR:", error);
+    console.error(error);
 
     return NextResponse.json(
-      {
-        error: "Failed to update order",
-      },
+      { error: "Failed to update order" },
       { status: 500 }
     );
   }

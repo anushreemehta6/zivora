@@ -66,13 +66,13 @@ export async function GET(req: Request) {
   if (slugsParam) {
     const slugList = slugsParam.split(",").map(s => s.trim()).filter(Boolean)
     whereClause = {
-      slug: { in: slugList },
-      isActive: true
+      slug: { in: slugList }
+      
     }
   } else {
     whereClause = {
       name: { contains: search, mode: "insensitive" },
-      isActive: true,
+      
       category: categoryFilter,
       collection: occasion
         ? {
