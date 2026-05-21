@@ -4,7 +4,7 @@ import { Filter, ChevronDown, ShoppingBag, Star } from "lucide-react"
 
 import WishlistToggle from "@/components/product/WishlistToggle"
 import NameFilterInput from "@/components/product/NameFilterInput"
-
+export const dynamic = "force-dynamic";
 async function getProducts(filters: any) {
   const { category, occasion, bond, tag, minPrice, maxPrice, sort, search } = filters;
  const baseUrl =
@@ -26,7 +26,7 @@ async function getProducts(filters: any) {
   try {
   const res = await fetch(
   `${baseUrl}/api/products?${query.toString()}`,
-  { next: { revalidate: 60 } }
+{ cache: "no-store" }
 )
 
     if (!res.ok) throw new Error("Failed to fetch products")

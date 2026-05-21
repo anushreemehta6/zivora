@@ -1,7 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Star, ShoppingBag } from "lucide-react"
-
+export const dynamic = "force-dynamic";
 async function getProducts() {
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL ||
@@ -12,9 +12,7 @@ async function getProducts() {
   try {
     const res = await fetch(
       `${baseUrl}/api/admin/products`,
-      {
-        next: { revalidate: 60 },
-      }
+      { cache: "no-store" }
     );
 
     if (!res.ok) {
