@@ -3,16 +3,26 @@ import Image from "next/image"
 import { Star, ShoppingBag } from "lucide-react"
 
 async function getProducts() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000");
+
   try {
     const res = await fetch(
       `${baseUrl}/api/admin/products`,
-      { cache: "no-store" }
-    )
+      {
+        next: { revalidate: 60 },
+      }
+    );
 
-    if (!res.ok) throw new Error("Failed to fetch products")
+    if (!res.ok) {
+      throw new Error("Failed to fetch products");
+    }
+
     const data = await res.json();
-    return data.slice(0,8);
+    return data.slice(0, 8);
   } catch (error) {
     console.error("Failed to fetch products during build:", error);
     return [];

@@ -17,10 +17,14 @@ import BoughtTogether from "@/components/product/BoughtTogether";
 import SimilarProducts from "@/components/product/SimilarProducts";
 import RecentlyViewed from "@/components/product/RecentlyViewed";
 async function getProduct(slug: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/products/${slug}`, {
-    cache: "no-store",
-  });
+  const baseUrl =
+  process.env.NEXT_PUBLIC_BASE_URL ||
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000");
+ const res = await fetch(`${baseUrl}/api/products/${slug}`, {
+  next: { revalidate: 60 },
+});
 
   if (!res.ok) throw new Error("Failed to fetch product");
 

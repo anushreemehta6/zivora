@@ -7,7 +7,11 @@ import NameFilterInput from "@/components/product/NameFilterInput"
 
 async function getProducts(filters: any) {
   const { category, occasion, bond, tag, minPrice, maxPrice, sort, search } = filters;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+ const baseUrl =
+  process.env.NEXT_PUBLIC_BASE_URL ||
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000");
   
   const query = new URLSearchParams();
   if (category) query.append("category", category);
@@ -20,10 +24,10 @@ async function getProducts(filters: any) {
   if (search) query.append("search", search);
 
   try {
-    const res = await fetch(
-      `${baseUrl}/api/products?${query.toString()}`,
-      { cache: "no-store" }
-    )
+  const res = await fetch(
+  `${baseUrl}/api/products?${query.toString()}`,
+  { next: { revalidate: 60 } }
+)
 
     if (!res.ok) throw new Error("Failed to fetch products")
 
