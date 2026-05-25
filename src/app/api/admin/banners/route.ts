@@ -3,9 +3,9 @@ import { prisma } from "@/lib/prisma"
 
 export async function POST(req: Request) {
   try {
-    const { title, image, link, isActive } = await req.json();
+    const { title,subtitle, desktopImage,mobileImage, destinationUrl, isActive ,priority,startDate,endDate} = await req.json();
     const banner = await prisma.banner.create({
-      data: { title, image, link, isActive: isActive ?? true }
+      data: { title,subtitle, desktopImage,mobileImage, destinationUrl ,priority,startDate,endDate, isActive: isActive ?? true }
     });
     return NextResponse.json(banner);
   } catch (error: any) {
