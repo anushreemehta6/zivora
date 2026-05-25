@@ -109,6 +109,10 @@ export default async function ProductsPage({
     "birthday",
     "wedding",
     "trending",
+    "couple",
+    "family",
+    "friends",
+    "festive",
   ];
 
   let tag = sParams.tag;

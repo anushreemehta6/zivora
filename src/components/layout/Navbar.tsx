@@ -54,23 +54,58 @@ const Navbar = () => {
               </button>
 
               {/* Dropdown Menu */}
-              <div className="absolute top-full left-0 pt-6 opacity-0 translate-y-4 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300">
-                <div className="w-56 bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 space-y-4 backdrop-blur-xl bg-white/90">
-                  <Link href="/products?tag=for-her" className="flex items-center justify-between text-xs hover:text-primary transition-colors">
-                    Recipient <ChevronRight size={12} />
-                  </Link>
-                  <Link href="/products?tag=couple" className="flex items-center justify-between text-xs hover:text-primary transition-colors">
-                    Bond <ChevronRight size={12} />
-                  </Link>
-                  <Link href="/products?tag=wedding" className="flex items-center justify-between text-xs hover:text-primary transition-colors">
-                    Occasion <ChevronRight size={12} />
-                  </Link>
-                  <Link href="/products?tag=minimalist" className="flex items-center justify-between text-xs hover:text-primary transition-colors">
-                    Theme <ChevronRight size={12} />
-                  </Link>
-                  <Link href="/products" className="flex items-center justify-between text-xs hover:text-primary transition-colors">
-                    Price <ChevronRight size={12} />
-                  </Link>
+              <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
+                <div className="w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 backdrop-blur-xl bg-white/95 overflow-visible">
+                  
+                  {/* Recipient - Submenu */}
+                  <div className="group/recipient relative border-b border-gray-100">
+                    <div className="flex items-center justify-between px-6 py-4 text-xs font-bold hover:bg-gray-50 transition-colors cursor-pointer">
+                      Recipient <ChevronRight size={12} />
+                    </div>
+                    <div className="absolute left-full top-0 -ml-2 w-48 opacity-0 invisible group-hover/recipient:opacity-100 group-hover/recipient:visible transition-all bg-white rounded-xl shadow-2xl border border-gray-100 pointer-events-none group-hover/recipient:pointer-events-auto">
+                      <Link href="/products/tag/for-her" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">For Her</Link>
+                      <Link href="/products/tag/for-him" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">For Him</Link>
+                      <Link href="/products/tag/gift-sets" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">Gift Sets</Link>
+                    </div>
+                  </div>
+
+                  {/* Bond - Submenu */}
+                  <div className="group/bond relative border-b border-gray-100">
+                    <div className="flex items-center justify-between px-6 py-4 text-xs font-bold hover:bg-gray-50 transition-colors cursor-pointer">
+                      Bond <ChevronRight size={12} />
+                    </div>
+                    <div className="absolute left-full top-0 -ml-2 w-48 opacity-0 invisible group-hover/bond:opacity-100 group-hover/bond:visible transition-all bg-white rounded-xl shadow-2xl border border-gray-100 pointer-events-none group-hover/bond:pointer-events-auto">
+                      <Link href="/products/bond/couple" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">Couple</Link>
+                      <Link href="/products/bond/family" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">Family</Link>
+                      <Link href="/products/bond/friends" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">Friends</Link>
+                    </div>
+                  </div>
+
+                  {/* Occasion - Submenu */}
+                  <div className="group/occasion relative border-b border-gray-100">
+                    <div className="flex items-center justify-between px-6 py-4 text-xs font-bold hover:bg-gray-50 transition-colors cursor-pointer">
+                      Occasion <ChevronRight size={12} />
+                    </div>
+                    <div className="absolute left-full top-0 -ml-2 w-48 opacity-0 invisible group-hover/occasion:opacity-100 group-hover/occasion:visible transition-all bg-white rounded-xl shadow-2xl border border-gray-100 pointer-events-none group-hover/occasion:pointer-events-auto">
+                      <Link href="/products/occasion/wedding" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">Wedding</Link>
+                      <Link href="/products/occasion/anniversary" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">Anniversary</Link>
+                      <Link href="/products/occasion/birthday" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">Birthday</Link>
+                      <Link href="/products/occasion/festive" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">Festive</Link>
+                    </div>
+                  </div>
+
+                  {/* Price Range - Submenu */}
+                  <div className="group/price relative">
+                    <div className="flex items-center justify-between px-6 py-4 text-xs font-bold hover:bg-gray-50 transition-colors cursor-pointer">
+                      Price <ChevronRight size={12} />
+                    </div>
+                    <div className="absolute left-full top-0 -ml-2 w-48 opacity-0 invisible group-hover/price:opacity-100 group-hover/price:visible transition-all bg-white rounded-xl shadow-2xl border border-gray-100 pointer-events-none group-hover/price:pointer-events-auto">
+                      <Link href="/products/price/under-1999" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">Under ₹1,999</Link>
+                      <Link href="/products/price/2000-4999" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">₹2,000 - ₹4,999</Link>
+                      <Link href="/products/price/5000-9999" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">₹5,000 - ₹9,999</Link>
+                      <Link href="/products/price/luxury" className="block px-5 py-3 text-xs hover:bg-primary/10 hover:text-primary transition-colors border-b border-gray-100 last:border-0">Above ₹10,000</Link>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
