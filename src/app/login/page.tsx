@@ -29,7 +29,16 @@ export default function LoginPage() {
       if (res?.error) {
         setError("The email or password you entered is incorrect.");
       } else {
-        router.push("/");
+        // Fetch session to get user role
+        const sessionRes = await fetch("/api/auth/session");
+        const session = await sessionRes.json();
+        
+        // Redirect based on role
+        if (session?.user?.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
         router.refresh();
       }
     } catch (err) {
@@ -78,7 +87,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Password</label>
-                <Link href="#" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest">Forgot Password?</Link>
+                <Link href="/forgot-password-request" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest">Forgot Password?</Link>
               </div>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={18} />
