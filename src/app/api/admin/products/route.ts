@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { calculateProductPrice } from "@/lib/calculatePrice"
 import { error } from "console"
 
 export async function POST(req: Request) {
@@ -9,29 +10,28 @@ export async function POST(req: Request) {
     const body = await req.json()
 
     const {
-      name,
-      metal,
-      purity,
-      weight,
-      makingCharge,
-      stonePrice = 0,
-      category,
-      description,
-      type,
-      categoryId,
-      images = [],
-      tags = []
-    } = body
+  name,
+  purity,
+  weight,
+  makingCharge,
+  stonePrice = 0,
+  category,
+  description,
+  type,
+  categoryId,
+  images = [],
+  tags = []
+} = body
 
     // Get latest metal rate
     const metalRate = await prisma.metalRate.findFirst({
       where: {
         metal: {
-          equals: metal,
+         equals: type.toUpperCase(),
           mode: "insensitive"
         },
         purity: {
-          equals: purity || "",
+          equals: purity?.toUpperCase() || "",
           mode: "insensitive"
         }
       },
@@ -42,13 +42,19 @@ export async function POST(req: Request) {
 
     if (!metalRate) {
       return NextResponse.json(
-        { error: "Metal rate not found",errorDetails: `No rate found for ${metal} with purity ${purity}` },
+        { error: "Metal rate not found",errorDetails: `No rate found for ${type} with purity ${purity}` },
         { status: 404 }
       )
     }
 
     // Price calculations
-    const metalPrice = metalRate.price * weight
+    const currentRate =
+  metalRate.adminPrice ??
+  metalRate.price ??
+  0
+
+const metalPrice =
+  currentRate * weight
     const makingPrice = makingCharge * weight
 
     const basePrice = metalPrice + makingPrice + stonePrice
@@ -59,19 +65,20 @@ export async function POST(req: Request) {
     slug: name.toLowerCase().replace(/\s+/g, "-"),
     description,
     sku: `${Date.now()}`,
-    type: type, // 👈 IMPORTANT FIX
-    purity,
+   type: type.toUpperCase().trim(),
+
+purity: purity.toUpperCase().trim(),
     weight,
     makingCharges: makingCharge,
     stonePrice,
     price: basePrice,
     tags: tags,
+    
 
     category: {
-      connect: { id: categoryId } // ✅ STRING (correct)
+      connect: { id: categoryId }
     },
 
-    // 🔥 FIX IMAGE HERE
     images: {
       create: images.map((url: string) => ({ url }))
     }
@@ -103,32 +110,11 @@ export async function GET() {
 
     const updatedProducts = await Promise.all(
       products.map(async (product) => {
-
-        const metalRate = await prisma.metalRate.findFirst({
-          where: {
-            metal: {
-              equals: product.type,
-              mode: "insensitive"
-            },
-            purity: {
-              equals: product.purity || "",
-              mode: "insensitive"
-            }
-          },
-          orderBy: { updatedAt: "desc" }
-        })
-
-        let dynamicPrice = product.price || 0
-        if (metalRate) {
-          const currentRate = metalRate.adminPrice ?? metalRate.price ?? 0
-          const metalPrice = currentRate * (product.weight || 0)
-          const makingPrice = (product.makingCharges || 0) * (product.weight || 0)
-          dynamicPrice = metalPrice + makingPrice + (product.stonePrice || 0)
-        }
+        const priceData = await calculateProductPrice(product)
 
         return {
           ...product,
-          dynamicPrice: dynamicPrice
+          dynamicPrice: priceData.dynamicPrice
         }
       })
     )

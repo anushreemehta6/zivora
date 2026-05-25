@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { NextResponse } from "next/server"
-import { calculateProductPrice } from "@/lib/pricing"
+import { calculateProductPrice } from "@/lib/calculatePrice"
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
 
       const priceData = await calculateProductPrice(product)
 
-      const price = priceData.finalPrice
+      const price = priceData.dynamicPrice
       const subtotal = price * item.quantity
 
       totalAmount += subtotal
@@ -99,9 +99,9 @@ export async function POST(req: Request) {
   // authoritative price calculations
   const discountVal = discount || 0
   const giftWrapVal = giftWrap ? 50 : 0
-  const taxableAmount = Math.max(0, totalAmount - discountVal + giftWrapVal)
-  const gstAmount = taxableAmount * 0.03
-  const finalAmount = taxableAmount + gstAmount
+  // Note: totalAmount already includes GST (from dynamicPrice)
+  // so we just calculate the final amount without adding GST again
+  const finalAmount = Math.max(0, totalAmount - discountVal + giftWrapVal)
 
   // Map payment method to uppercase enum
   let mappedPaymentMethod = "COD"

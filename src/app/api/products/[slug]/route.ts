@@ -1,28 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
-import { calculateProductPrice } from "@/lib/pricing"
-
-// export async function GET(req: Request, { params }: any) {
-//   const product = await prisma.product.findUnique({
-//     where: { slug: params.slug },
-//     include: {
-//       images: true,
-//       variants: true
-//     }
-//   })
-
-//   if (!product) {
-//     return Response.json({ error: "Product not found" }, { status: 404 })
-//   }
-
-//   const priceData = await calculateProductPrice(product.id)
-
-//   return Response.json({
-//     ...product,
-//     price: priceData.finalPrice,
-//     gst: priceData.gst
-//   })
-// }
+import { calculateProductPrice } from "@/lib/calculatePrice"
 
 export async function GET(
   req: Request,
@@ -61,37 +39,14 @@ export async function GET(
     // Calculate average rating
     const averageRating = typedProduct.reviews.length > 0
       ? typedProduct.reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / typedProduct.reviews.length
-      : 4.8 // Fallback to 4.8 if no reviews exist for premium look
+      : 4.8
 
-    const metalRate = await prisma.metalRate.findFirst({
-      where: {
-        metal: {
-          equals: product.type,
-          mode: "insensitive"
-        },
-        purity: {
-          equals: product.purity || "",
-          mode: "insensitive"
-        }
-      },
-      orderBy: { updatedAt: "desc" }
-    })
-
-    let dynamicPrice = product.price
-
-    if (metalRate) {
-      const currentRate = metalRate.adminPrice ?? metalRate.price ?? 0
-      const metalPrice = currentRate * (product.weight || 0)
-      const makingPrice =
-        (product.makingCharges || 0) * (product.weight || 0)
-
-      dynamicPrice =
-        metalPrice + makingPrice + (product.stonePrice || 0)
-    }
+    // Use centralized pricing utility
+    const priceData = await calculateProductPrice(product)
 
     return NextResponse.json({
       ...product,
-      dynamicPrice,
+      dynamicPrice: priceData.dynamicPrice,
       averageRating: parseFloat(averageRating.toFixed(1)),
       reviewCount: typedProduct.reviews.length
     })

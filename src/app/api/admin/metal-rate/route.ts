@@ -10,8 +10,8 @@ export async function POST(req: Request) {
     const rate = await prisma.metalRate.upsert({
       where: {
         metal_purity: {
-          metal,
-          purity
+        metal: metal.toUpperCase(),
+purity: purity.toUpperCase(),
         }
       },
       update: {
@@ -19,8 +19,8 @@ export async function POST(req: Request) {
         adminPrice
       },
       create: {
-        metal,
-        purity,
+       metal: metal.toUpperCase().trim(),
+  purity: purity.toUpperCase().trim(),
         price,
         adminPrice
       }

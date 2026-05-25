@@ -71,11 +71,12 @@ export default function RecentlyViewed({ currentSlug }: Props) {
           const slugsParam = slugList.join(",");
           const res = await fetch(`/api/products?slugs=${encodeURIComponent(slugsParam)}`);
           if (res.ok) {
-            const data = await res.json();
+            const response = await res.json();
+            const data = response.products || response; // Handle both response formats
             
             // Re-order the fetched products to match the exact order of the slugs list (most recently viewed first)
             const slugToProductMap = new Map<string, RecentlyViewedProduct>();
-            data.forEach((p: RecentlyViewedProduct) => slugToProductMap.set(p.slug, p));
+            (Array.isArray(data) ? data : []).forEach((p: RecentlyViewedProduct) => slugToProductMap.set(p.slug, p));
             
             const sortedData = slugList
               .map((slug) => slugToProductMap.get(slug))
@@ -88,9 +89,10 @@ export default function RecentlyViewed({ currentSlug }: Props) {
           setIsHistory(false);
           const res = await fetch(`/api/products?limit=8`);
           if (res.ok) {
-            const data = await res.json();
+            const response = await res.json();
+            const data = response.products || response; // Handle both response formats
             // Filter out current active product from trending suggestions too
-            const filteredData = data.filter((p: RecentlyViewedProduct) => p.slug !== currentSlug);
+            const filteredData = (Array.isArray(data) ? data : []).filter((p: RecentlyViewedProduct) => p.slug !== currentSlug);
             setProducts(filteredData.slice(0, 4));
           }
         }

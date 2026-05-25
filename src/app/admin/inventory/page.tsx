@@ -10,6 +10,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editedProduct, setEditedProduct] = useState<any>({});
+
   const handleSave = async (id: string) => {
     try {
       const res = await fetch(`/api/admin/products/${id}`, {
@@ -24,22 +25,31 @@ const Page = () => {
 
       const updated = await res.json();
 
-      setProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? updated : p))
+      );
+
+      // IMPORTANT
+      setEditedProduct(updated);
 
       setEditingId(null);
+
     } catch (error) {
       console.error(error);
     }
   };
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const res = await fetch("/api/admin/products");
         const data = await res.json();
 
-        setProducts(data);
+        setProducts(data.products || []);
+
       } catch (error) {
         console.error(error);
+
       } finally {
         setLoading(false);
       }
@@ -57,7 +67,7 @@ const Page = () => {
   }
 
   return (
-    <div className="w-full  px-6 py-8">
+    <div className="w-full px-6 py-8">
       {/* HEADER */}
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-secondary">
@@ -99,21 +109,25 @@ const Page = () => {
 
               <div className="text-right">
                 <p className="text-xs uppercase tracking-widest text-gray-400 font-bold">
-                  Price
+                  Live Price
                 </p>
 
                 <p className="text-3xl font-bold text-secondary">
-                  ₹{Number(product.price).toLocaleString()}
+                  ₹
+                  {Number(
+                    product.dynamicPrice || product.price || 0
+                  ).toLocaleString()}
                 </p>
               </div>
             </div>
 
             {/* MAIN CONTENT */}
             <div className="grid grid-cols-1 xl:grid-cols-[240px_minmax(0,1fr)] gap-8 items-start">
+
               {/* IMAGE */}
               <div className="relative w-full max-w-[240px]">
                 <Image
-                  src={product.images[0]?.url}
+                  src={product.images?.[0]?.url || "/placeholder.png"}
                   alt={product.name}
                   width={240}
                   height={240}
@@ -137,7 +151,7 @@ const Page = () => {
 
                       <input
                         type="text"
-                        value={editedProduct.name}
+                        value={editedProduct.name || ""}
                         onChange={(e) =>
                           setEditedProduct({
                             ...editedProduct,
@@ -155,7 +169,7 @@ const Page = () => {
                       </label>
 
                       <textarea
-                        value={editedProduct.description}
+                        value={editedProduct.description || ""}
                         onChange={(e) =>
                           setEditedProduct({
                             ...editedProduct,
@@ -168,32 +182,18 @@ const Page = () => {
 
                     {/* GRID */}
                     <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 w-full">
-                      <input
-                        type="text"
-                        placeholder="Slug"
-                        value={editedProduct.slug}
-                        onChange={(e) =>
-                          setEditedProduct({
-                            ...editedProduct,
-                            slug: e.target.value,
-                          })
-                        }
-                        className="h-14 px-4 rounded-2xl border border-gray-200 outline-none"
-                      />
 
-                      <input
-                        type="number"
-                        placeholder="Price"
-                        value={editedProduct.price || ""}
-                        onChange={(e) =>
-                          setEditedProduct({
-                            ...editedProduct,
-                            price: e.target.value,
-                          })
-                        }
-                        className="h-14 px-4 rounded-2xl border border-gray-200 outline-none"
-                      />
+                      {/* LIVE PRICE DISPLAY */}
+                      <div className="h-14 px-4 rounded-2xl border border-gray-100 bg-gray-50 flex items-center font-bold text-secondary">
+                        ₹
+                        {Number(
+                          editedProduct.dynamicPrice ||
+                          editedProduct.price ||
+                          0
+                        ).toLocaleString()}
+                      </div>
 
+                      {/* COMPARE PRICE */}
                       <input
                         type="number"
                         placeholder="Compare Price"
@@ -207,21 +207,9 @@ const Page = () => {
                         className="h-14 px-4 rounded-2xl border border-gray-200 outline-none"
                       />
 
-                      <input
-                        type="text"
-                        placeholder="SKU"
-                        value={editedProduct.sku}
-                        onChange={(e) =>
-                          setEditedProduct({
-                            ...editedProduct,
-                            sku: e.target.value,
-                          })
-                        }
-                        className="h-14 px-4 rounded-2xl border border-gray-200 outline-none"
-                      />
-
+                      {/* TYPE */}
                       <select
-                        value={editedProduct.type}
+                        value={editedProduct.type || ""}
                         onChange={(e) =>
                           setEditedProduct({
                             ...editedProduct,
@@ -237,6 +225,7 @@ const Page = () => {
                         <option value="GEMSTONE">GEMSTONE</option>
                       </select>
 
+                      {/* PURITY */}
                       <input
                         type="text"
                         placeholder="Purity"
@@ -250,6 +239,7 @@ const Page = () => {
                         className="h-14 px-4 rounded-2xl border border-gray-200 outline-none"
                       />
 
+                      {/* MAKING CHARGES */}
                       <input
                         type="number"
                         placeholder="Making Charges"
@@ -263,6 +253,7 @@ const Page = () => {
                         className="h-14 px-4 rounded-2xl border border-gray-200 outline-none"
                       />
 
+                      {/* WEIGHT */}
                       <input
                         type="number"
                         placeholder="Weight"
@@ -276,6 +267,7 @@ const Page = () => {
                         className="h-14 px-4 rounded-2xl border border-gray-200 outline-none"
                       />
 
+                      {/* STONE PRICE */}
                       <input
                         type="number"
                         placeholder="Stone Price"
@@ -288,6 +280,22 @@ const Page = () => {
                         }
                         className="h-14 px-4 rounded-2xl border border-gray-200 outline-none"
                       />
+
+                      {/* SKU (READONLY) */}
+                      <input
+                        type="text"
+                        value={editedProduct.sku || ""}
+                        readOnly
+                        className="h-14 px-4 rounded-2xl border border-gray-100 bg-gray-100 outline-none cursor-not-allowed"
+                      />
+
+                      {/* SLUG (READONLY) */}
+                      <input
+                        type="text"
+                        value={editedProduct.slug || ""}
+                        readOnly
+                        className="h-14 px-4 rounded-2xl border border-gray-100 bg-gray-100 outline-none cursor-not-allowed"
+                      />
                     </div>
 
                     {/* CHECKBOXES */}
@@ -295,7 +303,7 @@ const Page = () => {
                       <label className="flex items-center gap-3 text-sm font-medium">
                         <input
                           type="checkbox"
-                          checked={editedProduct.isFeatured}
+                          checked={editedProduct.isFeatured || false}
                           onChange={(e) =>
                             setEditedProduct({
                               ...editedProduct,
@@ -309,7 +317,7 @@ const Page = () => {
                       <label className="flex items-center gap-3 text-sm font-medium">
                         <input
                           type="checkbox"
-                          checked={editedProduct.isActive}
+                          checked={editedProduct.isActive || false}
                           onChange={(e) =>
                             setEditedProduct({
                               ...editedProduct,
@@ -353,7 +361,10 @@ const Page = () => {
                       </button>
 
                       <button
-                        onClick={() => setEditingId(null)}
+                        onClick={() => {
+                          setEditingId(null);
+                          setEditedProduct({});
+                        }}
                         className="px-8 h-14 rounded-2xl border border-gray-200 font-bold hover:bg-gray-50 transition-all"
                       >
                         Cancel
@@ -367,12 +378,15 @@ const Page = () => {
                     </p>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
                       <div className="bg-gray-50 rounded-2xl p-4">
                         <p className="text-xs text-gray-400 uppercase font-bold">
                           SKU
                         </p>
 
-                        <p className="font-bold mt-2">{product.sku}</p>
+                        <p className="font-bold mt-2">
+                          {product.sku}
+                        </p>
                       </div>
 
                       <div className="bg-gray-50 rounded-2xl p-4">
@@ -380,7 +394,9 @@ const Page = () => {
                           Weight
                         </p>
 
-                        <p className="font-bold mt-2">{product.weight || 0}g</p>
+                        <p className="font-bold mt-2">
+                          {product.weight || 0}g
+                        </p>
                       </div>
 
                       <div className="bg-gray-50 rounded-2xl p-4">

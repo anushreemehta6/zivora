@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { calculateProductPrice } from "@/lib/pricing"
+import { calculateProductPrice } from "@/lib/calculatePrice"
 import { NextResponse } from "next/server"
 
 export async function GET() {
