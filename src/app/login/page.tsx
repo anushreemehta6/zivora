@@ -65,7 +65,7 @@ export default function LoginPage() {
               Welcome Back
             </h1>
             <p className="text-gray-500 text-sm font-medium">
-              Step back into the world of Zivora elegance.
+              Step back into the world of Avira elegance.
             </p>
           </div>
 
@@ -116,7 +116,7 @@ export default function LoginPage() {
                 <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  Enter Zivora
+                  Enter Avira
                   <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
                 </>
               )}
@@ -146,7 +146,7 @@ export default function LoginPage() {
           </button>
 
           <p className="mt-10 text-center text-sm text-gray-500 font-medium tracking-tight">
-            New to Zivora?{" "}
+            New to Avira?{" "}
             <Link href="/signup" className="text-primary font-bold hover:underline transition-all group flex items-center justify-center gap-1 mt-1">
               Create an account <UserPlus size={16} className="inline ml-1" />
             </Link>

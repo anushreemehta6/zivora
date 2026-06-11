@@ -264,7 +264,7 @@ export default function AdminDashboard() {
 
           <div className="mt-8 pt-8 border-t border-white/5">
             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest text-center">
-              Version 2.4.1 • Zivora Admin
+              Version 2.4.1 • Avira Admin
             </p>
           </div>
         </div>

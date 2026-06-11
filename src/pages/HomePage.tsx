@@ -52,7 +52,7 @@ const HomePage = () => {
             </h1>
 
             <p className="text-lg text-slate-500 max-w-lg leading-relaxed font-medium tracking-wide">
-              Zivora is your trusted destination to buy 925 sterling silver jewellery online in India. Our collection features premium-quality silver pieces that are skin-friendly, long-lasting, and crafted to perfection.
+              Avira is your trusted destination to buy 925 sterling silver jewellery online in India. Our collection features premium-quality silver pieces that are skin-friendly, long-lasting, and crafted to perfection.
             </p>
 
             <div className="">
@@ -85,7 +85,7 @@ const HomePage = () => {
             <div className="relative w-full h-full rounded-[5rem] overflow-hidden shadow-2xl ring-1 ring-black/5">
               <Image
                 src={heroModelLuxury}
-                alt="Zivora Fine Jewelry"
+                alt="Avira Jewelry"
                 fill
                 className="object-cover"
                 priority

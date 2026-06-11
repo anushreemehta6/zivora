@@ -557,7 +557,7 @@ export default function CheckoutPage() {
               <div>
                 <h2 className="text-4xl font-bold text-secondary mb-2 ">Order Placed Successfully!</h2>
                 <p className="text-gray-500 max-w-md mx-auto">
-                  Thank you for shopping with <span className="logo text-primary">Zivora</span>. Your order <span className="font-mono font-bold text-secondary">#{orderId}</span> is being prepared for shipment.
+                  Thank you for shopping with <span className="logo text-primary">Avira</span>. Your order <span className="font-mono font-bold text-secondary">#{orderId}</span> is being prepared for shipment.
                 </p>
               </div>
 

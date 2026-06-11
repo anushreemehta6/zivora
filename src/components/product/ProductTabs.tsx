@@ -86,12 +86,12 @@ export default function ProductTabs({ product }: { product: any }) {
                 Signature <br /><span className="text-primary uppercase tracking-tight">Packaging</span>
               </h3>
               <p className="text-gray-600 leading-relaxed text-base font-medium">
-                Every Zivora masterpiece arrives in our signature midnight-blue velvet-lined box, designed to keep your jewelry safe and make every unboxing a moment to remember. 
+                Every Avira masterpiece arrives in our signature midnight-blue velvet-lined box, designed to keep your jewelry safe and make every unboxing a moment to remember. 
               </p>
               <div className="relative aspect-video rounded-[3rem] overflow-hidden shadow-2xl group ring-1 ring-black/5">
                  <Image 
                    src={premiumPackaging} 
-                   alt="Premium Zivora Packaging" 
+                   alt="Premium Avira Packaging" 
                    fill 
                    className="object-cover transition-transform duration-700 group-hover:scale-105" 
                  />

@@ -36,7 +36,7 @@ export default function AdminSidebar() {
     <div className="w-72 h-screen bg-[#1F2933] text-white flex flex-col border-r border-white/5 sticky top-0 overflow-y-auto">
       <div className="p-8 mb-4">
         <Link href="/admin">
-          <h1 className="text-white text-4xl font-bold tracking-tighter">Zivora</h1>
+          <h1 className="text-white text-4xl font-bold tracking-tighter">Avira</h1>
           <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-1">Admin Portal</p>
         </Link>
       </div>

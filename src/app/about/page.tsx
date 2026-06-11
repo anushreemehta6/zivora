@@ -20,7 +20,7 @@ export default function AboutPage() {
             Our <span className="text-primary underline decoration-primary/30 underline-offset-8">Heritage</span>
           </h1>
           <p className="text-base md:text-xl text-gray-500 leading-relaxed font-medium max-w-2xl mx-auto">
-            From the heart of traditional craftsmanship to the forefront of digital luxury. Discover the transition of Anushree Jewellers into Zivora.
+            From the heart of traditional craftsmanship to the forefront of digital luxury. Discover the transition of Anushree Jewellers into Avira.
           </p>
         </div>
       </section>
@@ -42,7 +42,7 @@ export default function AboutPage() {
         </div>
         <div className="space-y-8 md:space-y-10">
           <div className="space-y-4">
-            <p className="text-primary text-[10px] font-bold uppercase tracking-[0.2em]">The Story of Zivora</p>
+            <p className="text-primary text-[10px] font-bold uppercase tracking-[0.2em]">The Story of Avira</p>
             <h2 className="text-4xl md:text-6xl font-bold text-secondary leading-[1.1] tracking-tighter">
               From <span className="text-primary tracking-tight">Anushree Jewellers</span> to the World.
             </h2>
@@ -52,7 +52,7 @@ export default function AboutPage() {
               In the historic ateliers of traditional jewelry making, Kiran Mehta founded Anushree Jewellers with a single mission: to create silver pieces that transcend time. For decades, we served as a beacon of artisanal trust and purity.
             </p>
             <p>
-              Today, that same legacy of trust and 925 sterling silver purity enters a new era with Zivora. We've taken our decades of physical expertise and transformed it into a digital discovery experience, bringing curated handcrafted silver to your doorstep, anywhere in the world.
+              Today, that same legacy of trust and 925 sterling silver purity enters a new era with Avira. We've taken our decades of physical expertise and transformed it into a digital discovery experience, bringing curated handcrafted silver to your doorstep, anywhere in the world.
             </p>
           </div>
           <div className="flex gap-10 pt-6">
@@ -85,7 +85,7 @@ export default function AboutPage() {
                  <h2 className="text-4xl md:text-6xl font-bold tracking-tighter leading-none">Artistry in <span className="text-primary italic">Every Layer</span></h2>
               </div>
               <p className="text-gray-400 max-w-md text-sm md:text-base font-medium leading-relaxed">
-                 From molten silver to a finished masterpiece, every Zivora piece goes through a rigorous seven-stage quality check and artisanal finish.
+                 From molten silver to a finished masterpiece, every Avira piece goes through a rigorous seven-stage quality check and artisanal finish.
               </p>
            </div>
 

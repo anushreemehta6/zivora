@@ -11,7 +11,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20 text-slate-400">
         <div className="flex flex-col space-y-8">
           <Link href="/">
-            <h1 className="text-white text-4xl font-bold tracking-tighter">Zivora</h1>
+            <h1 className="text-white text-4xl font-bold tracking-tighter">Avira</h1>
             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-1">Fine Silver Jewelry</p>
           </Link>
           <p className="text-sm leading-relaxed max-w-xs font-medium">
@@ -65,14 +65,14 @@ const Footer = () => {
             </div>
             <div className="flex items-center gap-4">
               <Mail size={18} className="text-primary flex-shrink-0" />
-              <p className="text-sm font-bold tracking-wider hover:text-white transition-colors cursor-pointer">zivora2026@gmail.com</p>
+              <p className="text-sm font-bold tracking-wider hover:text-white transition-colors cursor-pointer">Avira2026@gmail.com</p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] font-bold text-gray-500 uppercase tracking-[0.25em]">
-        <p>&copy; {new Date().getFullYear()} Zivora Fine Jewelry. All Rights Reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Avira Jewelry. All Rights Reserved.</p>
         <p>Designed and Developed By Anushree Mehta</p>
       </div>
     </footer>

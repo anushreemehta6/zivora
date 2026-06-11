@@ -114,7 +114,7 @@ export default function FAQPage() {
         <h3 className="text-lg font-bold mb-2">Still need help?</h3>
         <p className="text-sm text-gray-400 mb-6 font-medium uppercase tracking-widest text-[10px]">Contact our support team</p>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-8 text-sm font-semibold">
-          <p>Email: zivora2026@gmail.com</p>
+          <p>Email: Avira2026@gmail.com</p>
           <p>Phone: +91 95492 58382</p>
         </div>
       </div>

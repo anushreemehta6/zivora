@@ -119,8 +119,9 @@ const Navbar = () => {
           {/* Logo */}
           <Link href="/" className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">
             <h1 className="logo-gradient text-3xl md:text-6xl font-bold tracking-tighter">
-              Zivora
+              Avira
             </h1>
+           
           </Link>
 
 
@@ -257,7 +258,7 @@ const Navbar = () => {
                       <>
                         {/* Guest Header */}
                         <div className="border-b border-gray-100 pb-4">
-                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-2">Welcome to Zivora</p>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-2">Welcome to Avira</p>
                           <h4 className="font-bold text-secondary text-sm leading-tight mb-0.5">Guest Profile</h4>
                           <p className="text-xs text-gray-400 leading-none">Login to track orders and save favorites</p>
                         </div>
@@ -337,7 +338,7 @@ const Navbar = () => {
         className={`fixed inset-y-0 left-0 w-72 bg-white z-[101] flex flex-col p-8 transition-transform duration-300 lg:hidden ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="flex justify-between items-center mb-12">
-          <h1 className="logo-gradient text-3xl font-bold">Zivora</h1>
+          <h1 className="logo-gradient text-3xl font-bold">Avira</h1>
           <button onClick={() => setIsMobileMenuOpen(false)}>
             <X size={24} className="text-gray-400" />
           </button>

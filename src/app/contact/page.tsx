@@ -96,7 +96,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Email</p>
-                <p className="text-lg font-bold text-secondary ">zivora2026@gmail.com</p>
+                <p className="text-lg font-bold text-secondary ">Avira2026@gmail.com</p>
                 <p className="text-xs text-gray-400 font-medium">Average response time: 4 hours</p>
               </div>
             </div>

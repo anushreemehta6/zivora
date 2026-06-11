@@ -57,7 +57,7 @@ export default function SignupPage() {
               Create Account
             </h1>
             <p className="text-gray-500 text-sm font-medium">
-              Join the Zivora family for exclusive silver collections.
+              Join the Avira family for exclusive silver collections.
             </p>
           </div>
 

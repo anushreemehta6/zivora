@@ -6,7 +6,7 @@ export default function PrivacyPolicyPage() {
       <h1 className="text-3xl font-bold mb-8 border-b pb-4">Privacy Policy</h1>
 
       <p className="text-sm leading-relaxed mb-10 text-gray-600">
-        This Privacy Policy explains how Zivora collects, uses, and protects your information when you visit or shop on our website. We are committed to ensuring your privacy and protecting your data.
+        This Privacy Policy explains how Avira collects, uses, and protects your information when you visit or shop on our website. We are committed to ensuring your privacy and protecting your data.
       </p>
 
       <div className="space-y-12">
