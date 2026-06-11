@@ -5,7 +5,7 @@ import Dashboard from "./dashboard/page";
 import HomePage from "@/pages/HomePage";
 import Products from "@/pages/Products";
 import Banner from "@/pages/Banner";
-
+export const dynamic = "force-dynamic";
 export default function Home() {
   return (
     <div>
